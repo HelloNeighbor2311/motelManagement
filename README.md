@@ -21,6 +21,111 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Chạy dự án trước khi test API
+
+Trước khi mở Postman, bạn cần khởi động ứng dụng Laravel bằng các bước sau:
+
+1. Cài dependency PHP nếu chưa có:
+
+```bash
+composer install
+```
+
+2. Sao chép file môi trường và tạo APP_KEY nếu dự án chưa có:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Trên Windows PowerShell, nếu lệnh `cp` không dùng được, bạn có thể chạy:
+
+```powershell
+Copy-Item .env.example .env
+php artisan key:generate
+```
+
+3. Kiểm tra lại cấu hình database trong file `.env`, đặc biệt là `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
+
+4. Chạy migration và seed dữ liệu mẫu:
+
+```bash
+php artisan migrate --seed
+```
+
+5. Khởi động server Laravel:
+
+```bash
+php artisan serve
+```
+
+6. Nếu dự án có dùng Vite cho frontend, mở thêm terminal khác và chạy:
+
+```bash
+npm install
+npm run dev
+```
+
+Sau khi server chạy, API của bạn sẽ có dạng:
+
+```text
+http://127.0.0.1:8000/api/khu-vuc
+```
+
+## KhuVuc Seeder And Postman Test
+
+### 1. Chạy seeder
+
+```bash
+php artisan db:seed
+```
+
+Nếu bạn muốn chạy lại toàn bộ migration và seed từ đầu:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+### 2. API `KhuVuc`
+
+Route đang dùng là `/api/khu-vuc`.
+
+- `GET /api/khu-vuc`: lấy danh sách khu vực.
+- `GET /api/khu-vuc/{id}`: lấy chi tiết một khu vực.
+- `POST /api/khu-vuc`: tạo khu vực mới.
+- `PUT /api/khu-vuc/{id}`: cập nhật khu vực.
+- `DELETE /api/khu-vuc/{id}`: xoá khu vực.
+
+### 3. Test trên Postman
+
+1. Mở Postman và tạo request mới.
+2. Chọn method tương ứng với thao tác cần test.
+3. Nhập URL ví dụ:
+
+```text
+http://127.0.0.1:8000/api/khu-vuc
+```
+
+4. Với `POST` hoặc `PUT`, vào tab `Body` -> chọn `raw` -> chọn `JSON` và gửi payload như sau:
+
+```json
+{
+    "TenKhuVuc": "Quận 10",
+    "DiaChi": "TP. Hồ Chí Minh",
+    "MoTa": "Khu vực mẫu để test API"
+}
+```
+
+5. Với `GET`, chỉ cần gửi request và xem JSON trả về.
+6. Với `DELETE`, gọi đúng URL có `id` của bản ghi cần xoá.
+
+### 4. Kết quả mong đợi
+
+- `GET` trả về danh sách JSON của các khu vực.
+- `POST` trả về bản ghi vừa tạo với status `201`.
+- `PUT` trả về bản ghi đã cập nhật.
+- `DELETE` trả về status `204` nếu xoá thành công.
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
