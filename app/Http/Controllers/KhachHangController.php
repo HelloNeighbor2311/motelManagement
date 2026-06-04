@@ -19,15 +19,28 @@ class KhachHangController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only(['HoTen','LoaiKhachHang','SoCmndCccd','QuocTich','SoDienThoai','Email']);
-        $model = KhachHang::create($data);
+        $validated = $request->validate([
+            'HoTen' => 'required|string|max:200',
+            'LoaiKhachHang' => 'required|in:CaNhan,DoanhNghiep,NuocNgoai',
+            'SoDienThoai' => 'required|string|max:20',
+            'Email' => 'nullable|email|max:255',
+        ]);
+
+        $model = KhachHang::create($validated);
         return response($model, 201);
     }
 
     public function update(Request $request, $id)
     {
         $m = KhachHang::findOrFail($id);
-        $m->update($request->only(['HoTen','LoaiKhachHang','SoCmndCccd','QuocTich','SoDienThoai','Email']));
+        $validated = $request->validate([
+            'HoTen' => 'sometimes|required|string|max:200',
+            'LoaiKhachHang' => 'sometimes|required|in:CaNhan,DoanhNghiep,NuocNgoai',
+            'SoDienThoai' => 'sometimes|required|string|max:20',
+            'Email' => 'nullable|email|max:255',
+        ]);
+
+        $m->update($validated);
         return $m;
     }
 
