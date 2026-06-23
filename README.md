@@ -49,6 +49,168 @@ php artisan key:generate
 
 4. Chạy migration và seed dữ liệu mẫu:
 
+## Cấu Trúc Cơ Sở Dữ Liệu
+
+Hệ thống quản lý phòng trọ sử dụng SQL Server/MySQL với các bảng sau:
+
+### 1. **KhuVuc** - Quản lý Khu Vực
+Lưu trữ thông tin các khu vực cho thuê
+- `Id` (UUID): Khóa chính
+- `TenKhuVuc` (string, 200): Tên khu vực
+- `DiaChi` (string, 500): Địa chỉ khu vực
+- `MoTa` (string, 1000): Mô tả chi tiết
+- `CreatedAt` (datetime): Ngày tạo
+
+### 2. **ToaNha** - Quản lý Tòa Nhà
+Lưu trữ thông tin các tòa nhà trong khu vực
+- `Id` (UUID): Khóa chính
+- `KhuVucId` (UUID FK): Tham chiếu đến KhuVuc
+- `TenToaNha` (string, 200): Tên tòa nhà
+- `SoTang` (int): Số tầng
+- `MoTa` (string, 1000): Mô tả
+- `CreatedAt` (datetime): Ngày tạo
+
+### 3. **CanHo** - Quản lý Căn Hộ
+Lưu trữ thông tin chi tiết từng căn hộ
+- `Id` (UUID): Khóa chính
+- `ToaNhaId` (UUID FK): Tham chiếu đến ToaNha
+- `MaCanHo` (string, 50): Mã căn hộ (VD: A101)
+- `Tang` (int): Số tầng
+- `DienTich` (float): Diện tích m²
+- `SoPhong` (int): Số phòng trong căn hộ
+- `TrangThai` (string): Trong/DangThue/BaoTri
+- `GiaThue` (decimal): Giá thuê hàng tháng
+- `CreatedAt` (datetime): Ngày tạo
+
+### 4. **TaiKhoanNguoiDung** - Quản lý Tài Khoản Người Dùng
+Lưu trữ thông tin tài khoản nhân viên/quản lý
+- `Id` (UUID): Khóa chính
+- `HoTen` (string, 200): Họ tên
+- `SoDienThoai` (string, 20): Số điện thoại
+- `Email` (string, 255): Email (UNIQUE)
+- `TenDangNhap` (string, 100): Username (UNIQUE)
+- `MatKhauHash` (string, 512): Hash password
+- `RefreshToken` (string, 512): Token làm mới
+- `OtpCode` (string, 10): Mã OTP
+- `OtpHetHan` (datetime): Thời gian OTP hết hạn
+- `TrangThaiTk` (string): Active/Inactive/Locked
+- `VaiTro` (string): Admin/Staff/Viewer
+- `LastLogin` (datetime): Lần đăng nhập cuối
+- `CreatedAt` (datetime): Ngày tạo
+
+### 5. **KhachHang** - Quản lý Khách Hàng
+Lưu trữ thông tin khách thuê
+- `Id` (UUID): Khóa chính
+- `HoTen` (string, 200): Họ tên khách
+- `LoaiKhachHang` (string): CaNhan/DoanhNghiep/NuocNgoai
+- `SoCmndCccd` (string, 30): Số CMND/CCCD
+- `QuocTich` (string, 100): Quốc tích
+- `SoDienThoai` (string, 20): Số điện thoại
+- `Email` (string, 255): Email
+- `CreatedAt` (datetime): Ngày tạo
+
+### 6. **ThongTinCaNhan** - Thông Tin Chi Tiết Khách Hàng
+Lưu trữ thông tin cá nhân mở rộng
+- `Id` (UUID): Khóa chính
+- `KhachHangId` (UUID FK): Tham chiếu đến KhachHang (UNIQUE)
+- `DiaChiThuongTru` (string, 500): Địa chỉ thường trú
+- `NgaySinh` (date): Ngày sinh
+- `GioiTinh` (string): Nam/Nu/Khac
+- `TenCongTy` (string, 300): Tên công ty (nếu là doanh nghiệp)
+- `MaSoThue` (string, 50): Mã số thuế
+- `NguoiDaiDien` (string, 200): Người đại diện
+- `QuocGia` (string, 100): Quốc gia
+- `VisaType` (string, 50): Loại visa
+- `VisaHetHan` (date): Ngày visa hết hạn
+- `GhiChu` (string, 1000): Ghi chú
+- `UpdatedAt` (datetime): Ngày cập nhật
+
+### 7. **HopDong** - Quản lý Hợp Đồng Thuê
+Lưu trữ thông tin hợp đồng thuê
+- `Id` (UUID): Khóa chính
+- `KhachHangId` (UUID FK): Tham chiếu đến KhachHang
+- `CanHoId` (UUID FK, NULL): Tham chiếu đến CanHo
+- `ToaNhaId` (UUID FK, NULL): Tham chiếu đến ToaNha
+- `MaHopDong` (string, 50): Mã hợp đồng (UNIQUE)
+- `NgayBatDau` (date): Ngày bắt đầu
+- `NgayKetThuc` (date): Ngày kết thúc
+- `GiaThueThaoThuan` (decimal): Giá thuê thỏa thuận
+- `TienDatCoc` (decimal): Số tiền đặt cọc
+- `PhuongThucThanhToan` (string): TienMat/ChuyenKhoan/TheNganHang
+- `ChuKyThanhToan` (string): Thang/Quy/Nam
+- `TrangThaiHopDong` (string): HieuLuc/HetHan/HuyBo/GiaHan
+- `GhiChu` (string, 1000): Ghi chú
+- `CreatedAt` (datetime): Ngày tạo
+
+### 8. **HoaDon** - Quản lý Hóa Đơn
+Lưu trữ thông tin hóa đơn thanh toán
+- `Id` (UUID): Khóa chính
+- `HopDongId` (UUID FK): Tham chiếu đến HopDong
+- `KhachHangId` (UUID FK): Tham chiếu đến KhachHang
+- `MaHoaDon` (string, 50): Mã hóa đơn (UNIQUE)
+- `NgayPhatHanh` (date): Ngày phát hành
+- `NgayDenHan` (date): Ngày đến hạn thanh toán
+- `NgayThanhToan` (date, NULL): Ngày thanh toán thực tế
+- `SoTien` (decimal): Số tiền hóa đơn
+- `LoaiHoaDon` (string): TienThue/TienDatCoc/DichVu/PhatSinhKhac
+- `TrangThaiThanhToan` (string): ChuaThanhToan/DaThanhToan/QuaHan/HuyBo
+- `MoTa` (string, 500): Mô tả
+- `Thang` (int, 1-12): Tháng
+- `Nam` (int): Năm
+- `CreatedAt` (datetime): Ngày tạo
+
+### 9. **ThuChi** - Quản lý Thu Chi
+Lưu trữ thông tin giao dịch thu chi
+- `Id` (UUID): Khóa chính
+- `HopDongId` (UUID FK, NULL): Tham chiếu đến HopDong
+- `HoaDonId` (UUID FK, NULL): Tham chiếu đến HoaDon
+- `TaiKhoanId` (UUID FK, NULL): Tham chiếu đến TaiKhoanNguoiDung
+- `LoaiGiaoDich` (string): Thu/Chi
+- `SoTien` (decimal): Số tiền
+- `NgayGiaoDich` (date): Ngày giao dịch
+- `Thang` (int, 1-12): Tháng
+- `Nam` (int): Năm
+- `MoTa` (string, 500): Mô tả giao dịch
+- `ThamChieu` (string, 100): Mã tham chiếu
+- `CreatedAt` (datetime): Ngày tạo
+
+### 10. **BaoCaoTaiChinh** - Báo Cáo Tài Chính
+Lưu trữ thông tin báo cáo tài chính định kỳ
+- `Id` (UUID): Khóa chính
+- `TaiKhoanId` (UUID FK, NULL): Tham chiếu đến TaiKhoanNguoiDung
+- `LoaiBaoCao` (string): Thang/Quy/Nam
+- `Thang` (int, 1-12, NULL): Tháng (nếu báo cáo tháng)
+- `Quy` (int, 1-4, NULL): Quý (nếu báo cáo quý)
+- `Nam` (int): Năm
+- `TongThu` (decimal): Tổng doanh thu
+- `TongChi` (decimal): Tổng chi phí
+- `TienThueThu` (decimal): Tiền thuê thu được
+- `TienDatCocThu` (decimal): Tiền đặt cọc thu được
+- `ChiPhiVanHanh` (decimal): Chi phí vận hành
+- `SoDu` (computed): Số dư = TongThu - TongChi
+- `NgayTao` (datetime): Ngày tạo
+- `GhiChu` (string, 1000): Ghi chú
+
+### Ràng Buộc Và Ký Tự Đặc Biệt
+- **Primary Key**: Tất cả bảng sử dụng UUID làm khóa chính
+- **Foreign Keys**: Các quan hệ khóa ngoại được thiết lập giữa các bảng liên quan
+- **Unique Constraints**: MaCanHo, MaHopDong, MaHoaDon, Email, TenDangNhap
+- **Check Constraints**: Xác thực các giá trị enum cho các trường như TrangThai, LoaiKhachHang, VaiTro, v.v.
+- **Computed Columns**: Cột SoDu trong BaoCaoTaiChinh được tính toán tự động
+
+### Chỉ Mục (Indexes)
+Để tối ưu hóa truy vấn:
+- `IX_ToaNha_KhuVucId`: Tìm kiếm tòa nhà theo khu vực
+- `IX_CanHo_ToaNhaId`: Tìm kiếm căn hộ theo tòa nhà
+- `IX_CanHo_TrangThai`: Tìm kiếm căn hộ theo trạng thái
+- `IX_HopDong_KhachHang`: Tìm kiếm hợp đồng theo khách hàng
+- `IX_HopDong_TrangThai`: Tìm kiếm hợp đồng theo trạng thái
+- `IX_HoaDon_HopDong`: Tìm kiếm hóa đơn theo hợp đồng
+- `IX_HoaDon_ThangNam`: Tìm kiếm hóa đơn theo tháng/năm
+- `IX_ThuChi_ThangNam`: Tìm kiếm giao dịch theo tháng/năm
+- `IX_ThuChi_LoaiGiaoDich`: Tìm kiếm giao dịch theo loại (Thu/Chi)
+- `IX_KhachHang_Loai`: Tìm kiếm khách hàng theo loại
+
 ```bash
 php artisan migrate --seed
 ```
