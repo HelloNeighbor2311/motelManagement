@@ -39,9 +39,15 @@
     <div class="card-header" style="background-color: #f8f9fa; border-bottom: 1px solid #e0e0e0; padding: 16px;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
             <h6 class="mb-0 fw-bold">Danh Sách Khu Vực ({{ $areas->count() }} cái)</h6>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="searchInput" placeholder="Tìm kiếm..." class="form-control form-control-sm" style="max-width: 200px;">
-            </div>
+            <form method="GET" action="{{ route('areas.index') }}" style="display: flex; gap: 8px;">
+                <input type="text" name="search" id="searchInput" value="{{ request('search') }}" placeholder="Tìm kiếm..." class="form-control form-control-sm" style="max-width: 220px;">
+                <button type="submit" class="btn btn-sm btn-primary">
+                    <i class="fas fa-search"></i> Lọc
+                </button>
+                @if (request()->filled('search'))
+                    <a href="{{ route('areas.index') }}" class="btn btn-sm btn-outline-secondary">Xóa lọc</a>
+                @endif
+            </form>
         </div>
     </div>
     <div class="card-body p-0">
@@ -104,19 +110,6 @@
 
 @push('scripts')
 <script>
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const filter = this.value.toLowerCase();
-        const table = document.getElementById('areasTable');
-        if (!table) return;
-
-        const rows = table.getElementsByTagName('tr');
-        for (let i = 0; i < rows.length; i++) {
-            const text = rows[i].textContent.toLowerCase();
-            rows[i].style.display = text.includes(filter) ? '' : 'none';
-        }
-    });
-
     // Delete functionality
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {

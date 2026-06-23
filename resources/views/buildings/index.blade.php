@@ -30,20 +30,27 @@
 <!-- Filter -->
 <div class="card mb-3">
     <div class="card-body p-3">
-        <div style="display: flex; gap: 12px; align-items: flex-end;">
+        <form method="GET" action="{{ route('buildings.index') }}" style="display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap;">
             <div style="flex: 1;">
                 <label class="form-label" style="font-weight: 600; font-size: 12px;">Lọc theo Khu Vực</label>
-                <select id="areaFilter" class="form-select">
+                <select name="area" id="areaFilter" class="form-select">
                     <option value="">-- Tất Cả --</option>
                     @foreach($areas as $area)
-                        <option value="{{ $area->Id }}">{{ $area->TenKhuVuc }}</option>
+                        <option value="{{ $area->Id }}" {{ request('area') == $area->Id ? 'selected' : '' }}>{{ $area->TenKhuVuc }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm..." class="form-control" style="min-width: 200px;">
+                <label class="form-label" style="font-weight: 600; font-size: 12px;">Tìm kiếm</label>
+                <input type="text" name="search" id="searchInput" value="{{ request('search') }}" placeholder="Tìm kiếm..." class="form-control" style="min-width: 220px;">
             </div>
-        </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-search"></i> Lọc
+            </button>
+            @if (request()->filled('area') || request()->filled('search'))
+                <a href="{{ route('buildings.index') }}" class="btn btn-outline-secondary">Xóa lọc</a>
+            @endif
+        </form>
     </div>
 </div>
 
@@ -110,29 +117,6 @@
 
 @push('scripts')
 <script>
-    // Filter by area
-    document.getElementById('areaFilter').addEventListener('change', function() {
-        const areaId = this.value;
-        const rows = document.querySelectorAll('#buildingsTable tbody tr');
-        rows.forEach(row => {
-            if (areaId === '' || row.getAttribute('data-area-id') === areaId) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
-    });
-
-    // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
-        const filter = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#buildingsTable tbody tr');
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(filter) ? '' : 'none';
-        });
-    });
-
     // Delete functionality
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {

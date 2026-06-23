@@ -42,14 +42,27 @@ class KhuVucSeeder extends Seeder
         ];
 
         foreach ($items as $item) {
-            DB::table('KhuVuc')->updateOrInsert(
-                ['TenKhuVuc' => $item['TenKhuVuc']],
-                [
-                    'Id' => (string) Str::uuid(),
-                    'DiaChi' => $item['DiaChi'],
-                    'MoTa' => $item['MoTa'],
-                ]
-            );
+            $exists = DB::table('KhuVuc')
+                ->where('TenKhuVuc', $item['TenKhuVuc'])
+                ->exists();
+
+            if ($exists) {
+                DB::table('KhuVuc')
+                    ->where('TenKhuVuc', $item['TenKhuVuc'])
+                    ->update([
+                        'DiaChi' => $item['DiaChi'],
+                        'MoTa' => $item['MoTa'],
+                    ]);
+
+                continue;
+            }
+
+            DB::table('KhuVuc')->insert([
+                'Id' => (string) Str::uuid(),
+                'TenKhuVuc' => $item['TenKhuVuc'],
+                'DiaChi' => $item['DiaChi'],
+                'MoTa' => $item['MoTa'],
+            ]);
         }
     }
 }

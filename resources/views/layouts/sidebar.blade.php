@@ -15,11 +15,11 @@
             </a>
         </li>
 
-        <!-- Quản Lý Bất Động Sản -->
+        <!-- Danh Mục Dữ Liệu -->
         <li class="has-submenu">
             <a href="#" class="sidebar-link">
-                <i class="fas fa-building"></i>
-                <span>Bất Động Sản</span>
+                <i class="fas fa-database"></i>
+                <span>Danh Mục Dữ Liệu</span>
             </a>
             <ul>
                 <li>
@@ -38,6 +38,12 @@
                     <a href="{{ route('apartments.index') }}">
                         <i class="fas fa-door-open"></i>
                         <span>Căn Hộ</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('apartments.floor-plan') }}">
+                        <i class="fas fa-th-large"></i>
+                        <span>Sơ Đồ Căn Hộ</span>
                     </a>
                 </li>
             </ul>

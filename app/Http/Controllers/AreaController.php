@@ -8,9 +8,20 @@ use Illuminate\Http\Request;
 class AreaController extends Controller
 {
     // List all areas
-    public function index()
+    public function index(Request $request)
     {
-        $areas = KhuVuc::withCount('toaNhas')->get();
+        $areas = KhuVuc::withCount(['toaNhas as toaNhas_count'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->string('search')->toString();
+
+                $query->where(function ($query) use ($search) {
+                    $query->where('TenKhuVuc', 'like', "%{$search}%")
+                        ->orWhere('DiaChi', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('TenKhuVuc')
+            ->get();
+
         return view('areas.index', compact('areas'));
     }
 
@@ -31,11 +42,12 @@ class AreaController extends Controller
 
         try {
             KhuVuc::create($validated);
+
             return redirect()->route('areas.index')
                 ->with('success', 'Thêm khu vực thành công!');
         } catch (\Exception $e) {
             return back()->withInput()
-                ->with('error', 'Lỗi: ' . $e->getMessage());
+                ->with('error', 'Lỗi: '.$e->getMessage());
         }
     }
 
@@ -44,6 +56,7 @@ class AreaController extends Controller
     {
         $area = KhuVuc::findOrFail($id);
         $buildings = $area->toaNhas()->with('canHos')->get();
+
         return view('areas.show', compact('area', 'buildings'));
     }
 
@@ -51,6 +64,7 @@ class AreaController extends Controller
     public function edit($id)
     {
         $area = KhuVuc::findOrFail($id);
+
         return view('areas.edit', compact('area'));
     }
 
@@ -67,11 +81,12 @@ class AreaController extends Controller
 
         try {
             $area->update($validated);
+
             return redirect()->route('areas.index')
                 ->with('success', 'Cập nhật khu vực thành công!');
         } catch (\Exception $e) {
             return back()->withInput()
-                ->with('error', 'Lỗi: ' . $e->getMessage());
+                ->with('error', 'Lỗi: '.$e->getMessage());
         }
     }
 
@@ -80,26 +95,26 @@ class AreaController extends Controller
     {
         try {
             $area = KhuVuc::findOrFail($id);
-            
+
             // Check if area has buildings
             if ($area->toaNhas()->count() > 0) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Không thể xóa khu vực đang có tòa nhà!'
+                    'message' => 'Không thể xóa khu vực đang có tòa nhà!',
                 ], 400);
             }
 
             $area->delete();
+
             return response()->json([
                 'success' => true,
-                'message' => 'Xóa khu vực thành công!'
+                'message' => 'Xóa khu vực thành công!',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi: ' . $e->getMessage()
+                'message' => 'Lỗi: '.$e->getMessage(),
             ], 500);
         }
     }
 }
-

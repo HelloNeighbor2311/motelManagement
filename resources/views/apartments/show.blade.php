@@ -107,7 +107,7 @@
                                         <td style="text-align: center;">{{ $contract->NgayBatDau ? \Carbon\Carbon::parse($contract->NgayBatDau)->format('d/m/Y') : 'N/A' }}</td>
                                         <td style="text-align: center;">{{ $contract->NgayKetThuc ? \Carbon\Carbon::parse($contract->NgayKetThuc)->format('d/m/Y') : 'N/A' }}</td>
                                         <td>
-                                            <span class="badge" style="background-color: #ffc107; color: #333;">{{ $contract->TrangThai ?? 'N/A' }}</span>
+                                            <span class="badge" style="background-color: #ffc107; color: #333;">{{ $contract->TrangThaiHopDong ?? 'N/A' }}</span>
                                         </td>
                                         <td style="text-align: center;">
                                             <a href="{{ route('contracts.show', $contract->Id ?? '#') }}" class="btn btn-sm btn-info">
@@ -141,7 +141,7 @@
                     </div>
                     <div>
                         <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Hợp Đồng Đang Hoạt Động</label>
-                        <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 600; color: #0066cc;">{{ $apartment->hopDongs()->where('TrangThai', 'active')->count() }}</p>
+                        <p style="margin: 4px 0 0 0; font-size: 18px; font-weight: 600; color: #0066cc;">{{ $apartment->hopDongs()->where('TrangThaiHopDong', 'HieuLuc')->count() }}</p>
                     </div>
                 </div>
             </div>

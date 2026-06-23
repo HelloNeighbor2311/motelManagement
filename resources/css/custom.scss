@@ -1,6 +1,7 @@
 // ============================================
 // Custom SCSS for Motel Management System
 // ============================================
+@use 'sass:color';
 
 // ============ Variables ============
 $primary: #0066CC;
@@ -73,7 +74,7 @@ a {
     text-decoration: none;
 
     &:hover {
-        color: darken($primary, 10%);
+        color: color.adjust($primary, $lightness: -10%);
     }
 }
 
@@ -502,7 +503,7 @@ a {
         color: $white;
 
         &:hover {
-            background-color: darken($primary, 10%);
+            background-color: color.adjust($primary, $lightness: -10%);
         }
     }
 
@@ -511,7 +512,7 @@ a {
         color: $white;
 
         &:hover {
-            background-color: darken($secondary, 10%);
+            background-color: color.adjust($secondary, $lightness: -10%);
         }
     }
 
@@ -520,7 +521,7 @@ a {
         color: $white;
 
         &:hover {
-            background-color: darken($success, 10%);
+            background-color: color.adjust($success, $lightness: -10%);
         }
     }
 
@@ -529,7 +530,7 @@ a {
         color: $white;
 
         &:hover {
-            background-color: darken($danger, 10%);
+            background-color: color.adjust($danger, $lightness: -10%);
         }
     }
 
@@ -538,7 +539,7 @@ a {
         color: $text-primary;
 
         &:hover {
-            background-color: darken($warning, 10%);
+            background-color: color.adjust($warning, $lightness: -10%);
         }
     }
 
@@ -624,7 +625,7 @@ a {
 
     &.badge-warning {
         background-color: rgba(255, 193, 7, 0.15);
-        color: darken($warning, 20%);
+        color: color.adjust($warning, $lightness: -20%);
     }
 
     &.badge-danger {

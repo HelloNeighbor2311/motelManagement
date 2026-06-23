@@ -33,36 +33,49 @@
 
 <div class="card">
     <div class="card-header">
-        <div class="row g-3 align-items-center">
-            <div class="col-md-3">
-                <select id="buildingFilter" class="form-select" onchange="applyFilters()">
-                    <option value="">-- Tất Cả Tòa Nhà --</option>
-                    @foreach ($buildings as $building)
-                        <option value="{{ $building->Id }}" {{ request('building') == $building->Id ? 'selected' : '' }}>
-                            {{ $building->TenToaNha }}
+        <form method="GET" action="{{ route('apartments.index') }}" class="row g-3 align-items-end">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label" style="font-weight: 600; font-size: 12px;">Khu Vực</label>
+                <select name="area" id="areaFilter" class="form-select">
+                    <option value="">-- Tất Cả Khu Vực --</option>
+                    @foreach ($areas as $area)
+                        <option value="{{ $area->Id }}" {{ request('area') == $area->Id ? 'selected' : '' }}>
+                            {{ $area->TenKhuVuc }}
                         </option>
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3">
-                <select id="statusFilter" class="form-select" onchange="applyFilters()">
+            <div class="col-lg-3 col-md-6">
+                <label class="form-label" style="font-weight: 600; font-size: 12px;">Tòa Nhà</label>
+                <select name="building" id="buildingFilter" class="form-select">
+                    <option value="">-- Tất Cả Tòa Nhà --</option>
+                    @foreach ($buildings as $building)
+                        <option value="{{ $building->Id }}" {{ request('building') == $building->Id ? 'selected' : '' }}>
+                            {{ $building->TenToaNha }}{{ $building->khuVuc ? ' - ' . $building->khuVuc->TenKhuVuc : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-lg-2 col-md-6">
+                <label class="form-label" style="font-weight: 600; font-size: 12px;">Trạng Thái</label>
+                <select name="status" id="statusFilter" class="form-select">
                     <option value="">-- Tất Cả Trạng Thái --</option>
                     <option value="Trong" {{ request('status') == 'Trong' ? 'selected' : '' }}>✅ Trống</option>
                     <option value="DangThue" {{ request('status') == 'DangThue' ? 'selected' : '' }}>⏳ Đang Thuê</option>
                     <option value="BaoTri" {{ request('status') == 'BaoTri' ? 'selected' : '' }}>🔧 Bảo Trì</option>
                 </select>
             </div>
-            <div class="col-md-6">
-                <form method="GET" action="{{ route('apartments.index') }}" class="d-flex gap-2">
-                    <input type="hidden" name="building" value="{{ request('building') }}">
-                    <input type="hidden" name="status" value="{{ request('status') }}">
+            <div class="col-lg-4 col-md-6">
+                <label class="form-label" style="font-weight: 600; font-size: 12px;">Tìm kiếm</label>
+                <div class="d-flex gap-2">
                     <input type="text" name="search" class="form-control" placeholder="Tìm mã căn, tầng..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Tìm Kiếm
-                    </button>
-                </form>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Lọc</button>
+                    @if (request()->filled('area') || request()->filled('building') || request()->filled('status') || request()->filled('search'))
+                        <a href="{{ route('apartments.index') }}" class="btn btn-outline-secondary">Xóa</a>
+                    @endif
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <div class="table-responsive">
@@ -70,6 +83,7 @@
             <thead style="background-color: #f8f9fa;">
                 <tr>
                     <th>Mã Căn</th>
+                    <th>Khu Vực</th>
                     <th>Tòa Nhà</th>
                     <th style="text-align: center;">Tầng</th>
                     <th style="text-align: center;">Diện Tích</th>
@@ -83,6 +97,7 @@
                 @forelse ($apartments as $apartment)
                     <tr>
                         <td><strong>{{ $apartment->MaCanHo }}</strong></td>
+                        <td>{{ $apartment->toaNha->khuVuc->TenKhuVuc ?? 'N/A' }}</td>
                         <td>{{ $apartment->toaNha->TenToaNha ?? 'N/A' }}</td>
                         <td style="text-align: center;">{{ $apartment->Tang }}</td>
                         <td style="text-align: center;">{{ $apartment->DienTich }} m²</td>
@@ -105,7 +120,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center py-4">
+                        <td colspan="9" class="text-center py-4">
                             <i class="fas fa-inbox" style="font-size: 32px; color: #ccc;"></i>
                             <p style="margin-top: 8px; color: #999;">Không có dữ liệu</p>
                         </td>
@@ -117,18 +132,12 @@
 
     @if ($apartments->hasPages())
         <div class="card-footer">
-            {{ $apartments->links('pagination::bootstrap-5') }}
+            {{ $apartments->appends(request()->query())->links('pagination::bootstrap-5') }}
         </div>
     @endif
 </div>
 
 <script>
-    function applyFilters() {
-        const building = document.getElementById('buildingFilter').value;
-        const status = document.getElementById('statusFilter').value;
-        window.location.href = `{{ route('apartments.index') }}?building=${building}&status=${status}`;
-    }
-
     document.querySelectorAll('.delete-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             const apartmentId = this.dataset.id;

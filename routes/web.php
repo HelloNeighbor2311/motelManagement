@@ -1,16 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\BuildingController;
-use App\Http\Controllers\ApartmentController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InvoiceController;
-use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Route;
 
 // Welcome Page
 Route::get('/', function () {
@@ -18,7 +18,7 @@ Route::get('/', function () {
 })->name('welcome');
 
 // Dashboard
-Route::middleware(['auth'])->group(function () {
+Route::group([], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Khu Vực (Areas)
