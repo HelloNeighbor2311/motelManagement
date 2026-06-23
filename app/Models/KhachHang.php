@@ -40,7 +40,7 @@ class KhachHang extends Model
     // Relationships
     public function thongTinCaNhan()
     {
-        return $this->hasOne(ThongTinCaNhan::class, 'KhachHangId', 'Id');
+        return $this->hasOne(ThongTinKhachHang::class, 'KhachHangId', 'Id');
     }
 
     public function hopDongs()

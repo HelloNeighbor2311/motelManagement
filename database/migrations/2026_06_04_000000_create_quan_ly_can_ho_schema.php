@@ -68,33 +68,27 @@ return new class extends Migration
         Schema::create('KhachHang', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->string('HoTen', 200);
-            $table->string('LoaiKhachHang', 20)->default('CaNhan');
-            $table->string('SoCmndCccd', 30)->nullable();
-            $table->string('QuocTich', 100)->nullable();
-            $table->string('SoDienThoai', 20)->nullable();
+            $table->string('LoaiKhachHang', 20);
+            $table->string('SoDienThoai', 20);
             $table->string('Email', 255)->nullable();
             $table->dateTime('CreatedAt')->useCurrent();
 
             $table->index('LoaiKhachHang', 'IX_KhachHang_Loai');
         });
 
-        Schema::create('ThongTinCaNhan', function (Blueprint $table) {
+        Schema::create('ThongTinKhachHang', function (Blueprint $table) {
             $table->uuid('Id')->primary();
             $table->uuid('KhachHangId');
-            $table->string('DiaChiThuongTru', 500)->nullable();
             $table->date('NgaySinh')->nullable();
             $table->string('GioiTinh', 10)->nullable();
-            $table->string('TenCongTy', 300)->nullable();
-            $table->string('MaSoThue', 50)->nullable();
-            $table->string('NguoiDaiDien', 200)->nullable();
-            $table->string('QuocGia', 100)->nullable();
-            $table->string('VisaType', 50)->nullable();
-            $table->date('VisaHetHan')->nullable();
+            $table->string('SoGiayTo', 50)->nullable();
+            $table->string('DiaChiThuongTru', 500)->nullable();
+            $table->string('QuocTich', 100)->nullable();
             $table->string('GhiChu', 1000)->nullable();
             $table->dateTime('UpdatedAt')->useCurrent();
 
             $table->foreign('KhachHangId')->references('Id')->on('KhachHang');
-            $table->unique('KhachHangId', 'UQ_ThongTinCaNhan_KhachHang');
+            $table->unique('KhachHangId', 'UQ_ThongTinKhachHang_KhachHang');
         });
 
         Schema::create('HopDong', function (Blueprint $table) {
@@ -207,8 +201,8 @@ return new class extends Migration
 
         if (DB::getDriverName() === 'sqlsrv') {
             DB::statement(<<<'SQL'
-                ALTER TABLE ThongTinCaNhan
-                ADD CONSTRAINT CHK_ThongTinCaNhan_GioiTinh CHECK (GioiTinh IN ('Nam', 'Nu', 'Khac'));
+                ALTER TABLE ThongTinKhachHang
+                ADD CONSTRAINT CHK_ThongTinKhachHang_GioiTinh CHECK (GioiTinh IN ('Nam', 'Nu', 'Khac'));
             SQL);
         }
 
@@ -270,7 +264,7 @@ return new class extends Migration
         Schema::dropIfExists('ThuChi');
         Schema::dropIfExists('HoaDon');
         Schema::dropIfExists('HopDong');
-        Schema::dropIfExists('ThongTinCaNhan');
+        Schema::dropIfExists('ThongTinKhachHang');
         Schema::dropIfExists('KhachHang');
         Schema::dropIfExists('TaiKhoanNguoiDung');
         Schema::dropIfExists('CanHo');
