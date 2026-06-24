@@ -31,7 +31,7 @@ class KhachHang extends Model
 
     public function getCCCDAttribute()
     {
-        return $this->thongTinCaNhan->SoGiayTo ?? null;
+        return null;
     }
 
     public function getLoaiKhachAttribute()
@@ -58,10 +58,16 @@ class KhachHang extends Model
         });
     }
 
-    // Relationships
-    public function thongTinCaNhan()
+    
+    public function thongTinKhachHang()
     {
         return $this->hasOne(ThongTinKhachHang::class, 'KhachHangId', 'Id');
+    }
+
+    // Backwards-compatible alias for older code using the previous method name
+    public function thongTinCaNhan()
+    {
+        return $this->thongTinKhachHang();
     }
 
     public function hopDongs()

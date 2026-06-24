@@ -79,7 +79,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">CCCD/MST <span class="text-danger">*</span></label>
-                        <input type="text" name="CCCD" class="form-control @error('CCCD') is-invalid @enderror" placeholder="VD: 123456789" value="{{ old('CCCD', $customer->CCCD) }}" required>
+                        <input type="text" name="CCCD" class="form-control @error('CCCD') is-invalid @enderror" placeholder="VD: 123456789" value="{{ old('CCCD', optional($customer->thongTinKhachHang)->SoGiayTo ?? $customer->CCCD) }}" required>
                         @error('CCCD')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
@@ -87,8 +87,38 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Địa Chỉ <span class="text-danger">*</span></label>
-                        <input type="text" name="DiaChi" class="form-control @error('DiaChi') is-invalid @enderror" placeholder="VD: 123 Đường ABC, Thành Phố" value="{{ old('DiaChi', $customer->DiaChi) }}" required>
+                        <input type="text" name="DiaChi" class="form-control @error('DiaChi') is-invalid @enderror" placeholder="VD: 123 Đường ABC, Thành Phố" value="{{ old('DiaChi', optional($customer->thongTinKhachHang)->DiaChiThuongTru ?? $customer->DiaChi) }}" required>
                         @error('DiaChi')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày Sinh</label>
+                        <input type="date" name="NgaySinh" class="form-control @error('NgaySinh') is-invalid @enderror" value="{{ old('NgaySinh', optional($customer->thongTinKhachHang)->NgaySinh ?? ($customer->NgaySinh ?? '')) }}">
+                        @error('NgaySinh')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Giới Tính</label>
+                        <select name="GioiTinh" class="form-select @error('GioiTinh') is-invalid @enderror">
+                            <option value="">-- Chọn --</option>
+                            <option value="Nam" {{ old('GioiTinh', optional($customer->thongTinKhachHang)->GioiTinh ?? ($customer->GioiTinh ?? '')) == 'Nam' ? 'selected' : '' }}>Nam</option>
+                            <option value="Nu" {{ old('GioiTinh', optional($customer->thongTinKhachHang)->GioiTinh ?? ($customer->GioiTinh ?? '')) == 'Nu' ? 'selected' : '' }}>Nữ</option>
+                        </select>
+                        @error('GioiTinh')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Quốc Tịch</label>
+                        <input type="text" name="QuocTich" class="form-control @error('QuocTich') is-invalid @enderror" placeholder="VD: Việt Nam" value="{{ old('QuocTich', optional($customer->thongTinKhachHang)->QuocTich ?? $customer->QuocTich) }}">
+                        @error('QuocTich')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
@@ -96,7 +126,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Ghi Chú</label>
-                    <textarea name="GhiChu" class="form-control @error('GhiChu') is-invalid @enderror" placeholder="Ghi chú thêm..." rows="3">{{ old('GhiChu', $customer->GhiChu) }}</textarea>
+                    <textarea name="GhiChu" class="form-control @error('GhiChu') is-invalid @enderror" placeholder="Ghi chú thêm..." rows="3">{{ old('GhiChu', optional($customer->thongTinKhachHang)->GhiChu ?? $customer->GhiChu) }}</textarea>
                     @error('GhiChu')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
