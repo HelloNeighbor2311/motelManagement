@@ -12,7 +12,8 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $query = KhachHang::with('thongTinCaNhan');
+        // Eager-load personal info and contract count to avoid calling relations on non-model objects
+        $query = KhachHang::with('thongTinCaNhan')->withCount('hopDongs');
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -212,8 +213,8 @@ class CustomerController extends Controller
      */
     public function search(Request $request)
     {
-        $q = $request->get('q', '');
-        $type = $request->get('type', '');
+        $q = $request->input('q', '');
+        $type = $request->input('type', '');
 
         $query = KhachHang::with('thongTinCaNhan');
 
@@ -239,7 +240,7 @@ class CustomerController extends Controller
                 'SoDienThoai' => $c->SoDienThoai,
                 'Email' => $c->Email,
                 'CCCD' => optional($c->thongTinCaNhan)->SoGiayTo ?? $c->CCCD,
-                'HopDongCount' => $c->hopDongs()->count(),
+                'HopDongCount' => $c->hop_dongs_count ?? 0,
             ];
         });
 

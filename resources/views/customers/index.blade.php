@@ -80,13 +80,13 @@
                         <td>{{ $customer->CCCD }}</td>
                         <td style="text-align: center; font-weight: 600;">{{ $customer->hopDongs()->count() }}</td>
                         <td style="text-align: center;">
-                            <a href="{{ route('customers.show', $customer->Id) }}" class="btn btn-sm btn-info" title="Xem Chi Tiết">
+                            <a href="{{ route('customers.show', $customer->Id) }}" class="btn btn-sm btn-info" title="Xem Chi Tiết" style="width:38px;display:inline-flex;align-items:center;justify-content:center;">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('customers.edit', $customer->Id) }}" class="btn btn-sm btn-warning" title="Chỉnh Sửa">
+                            <a href="{{ route('customers.edit', $customer->Id) }}" class="btn btn-sm btn-warning" title="Chỉnh Sửa" style="width:38px;display:inline-flex;align-items:center;justify-content:center;">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ $customer->Id }}" data-url="{{ route('customers.destroy', $customer->Id) }}" title="Xóa">
+                            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ $customer->Id }}" data-url="{{ route('customers.destroy', $customer->Id) }}" title="Xóa" style="width:38px;display:inline-flex;align-items:center;justify-content:center;">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
@@ -135,9 +135,9 @@
                     <td>${escapeHtml(c.CCCD || '')}</td>
                     <td style="text-align: center; font-weight: 600;">${c.HopDongCount}</td>
                     <td style="text-align: center;">
-                        <a href="/customers/${c.Id}" class="btn btn-sm btn-info" title="Xem Chi Tiết"><i class="fas fa-eye"></i></a>
-                        <a href="/customers/${c.Id}/edit" class="btn btn-sm btn-warning" title="Chỉnh Sửa"><i class="fas fa-edit"></i></a>
-                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${c.Id}" data-url="/customers/${c.Id}" title="Xóa"><i class="fas fa-trash"></i></button>
+                        <a href="/customers/${c.Id}" class="btn btn-sm btn-info" title="Xem Chi Tiết" style="width:38px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-eye"></i></a>
+                        <a href="/customers/${c.Id}/edit" class="btn btn-sm btn-warning" title="Chỉnh Sửa" style="width:38px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-edit"></i></a>
+                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${c.Id}" data-url="/customers/${c.Id}" title="Xóa" style="width:38px;display:inline-flex;align-items:center;justify-content:center;"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
