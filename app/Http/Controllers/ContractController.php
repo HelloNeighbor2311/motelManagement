@@ -14,7 +14,16 @@ class ContractController extends Controller
         $query = HopDong::with(['canHo', 'khachHang']);
 
         if ($request->has('status') && $request->status != '') {
-            $query->where('TrangThai', $request->status);
+            // Translate possible legacy/frontend statuses to DB values
+            $status = $request->status;
+            $map = [
+                'active' => 'HieuLuc',
+                'expired' => 'HetHan',
+                'cancelled' => 'HuyBo',
+                'renewed' => 'GiaHan',
+            ];
+            $dbStatus = $map[$status] ?? $status;
+            $query->where('TrangThaiHopDong', $dbStatus);
         }
 
         if ($request->has('search') && $request->search != '') {
@@ -52,11 +61,21 @@ class ContractController extends Controller
             'NgayKetThuc' => 'required|date|after:NgayBatDau',
             'GiaThue' => 'required|numeric|min:0',
             'TienDatCoc' => 'required|numeric|min:0',
-            'TrangThai' => 'required|in:active,expired,cancelled',
+            'TrangThai' => 'required|in:active,expired,cancelled,renewed',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
         try {
+            // Map incoming `TrangThai` form field to DB column `TrangThaiHopDong`
+            $map = [
+                'active' => 'HieuLuc',
+                'expired' => 'HetHan',
+                'cancelled' => 'HuyBo',
+                'renewed' => 'GiaHan',
+            ];
+            $validated['TrangThaiHopDong'] = $map[$validated['TrangThai']] ?? $validated['TrangThai'];
+            unset($validated['TrangThai']);
+
             HopDong::create($validated);
             return redirect()->route('contracts.index')->with('success', 'Thêm hợp đồng thành công!');
         } catch (\Exception $e) {
@@ -90,11 +109,21 @@ class ContractController extends Controller
             'NgayKetThuc' => 'required|date|after:NgayBatDau',
             'GiaThue' => 'required|numeric|min:0',
             'TienDatCoc' => 'required|numeric|min:0',
-            'TrangThai' => 'required|in:active,expired,cancelled',
+            'TrangThai' => 'required|in:active,expired,cancelled,renewed',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
         try {
+            // Translate `TrangThai` to DB column `TrangThaiHopDong` before update
+            $map = [
+                'active' => 'HieuLuc',
+                'expired' => 'HetHan',
+                'cancelled' => 'HuyBo',
+                'renewed' => 'GiaHan',
+            ];
+            $validated['TrangThaiHopDong'] = $map[$validated['TrangThai']] ?? $validated['TrangThai'];
+            unset($validated['TrangThai']);
+
             $contract->update($validated);
             return redirect()->route('contracts.show', $contract->Id)->with('success', 'Cập nhật hợp đồng thành công!');
         } catch (\Exception $e) {

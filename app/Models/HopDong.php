@@ -48,4 +48,31 @@ class HopDong extends Model
     {
         return $this->belongsTo(ToaNha::class, 'ToaNhaId', 'Id');
     }
+
+    // Compatibility accessor: allow reading $model->TrangThai which maps to DB's TrangThaiHopDong
+    public function getTrangThaiAttribute()
+    {
+        $db = $this->attributes['TrangThaiHopDong'] ?? null;
+        $map = [
+            'HieuLuc' => 'active',
+            'HetHan' => 'expired',
+            'HuyBo' => 'cancelled',
+            'GiaHan' => 'renewed',
+        ];
+
+        return $map[$db] ?? $db;
+    }
+
+    // Compatibility mutator: allow setting $model->TrangThai = 'active' etc.
+    public function setTrangThaiAttribute($value)
+    {
+        $map = [
+            'active' => 'HieuLuc',
+            'expired' => 'HetHan',
+            'cancelled' => 'HuyBo',
+            'renewed' => 'GiaHan',
+        ];
+
+        $this->attributes['TrangThaiHopDong'] = $map[$value] ?? $value;
+    }
 }

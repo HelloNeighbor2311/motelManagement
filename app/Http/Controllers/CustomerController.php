@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\KhachHang;
 use App\Models\ThongTinKhachHang;
+use App\Models\HopDong;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -149,12 +151,32 @@ class CustomerController extends Controller
         try {
             $customer = KhachHang::findOrFail($id);
 
-            // Check if customer has active contracts
-            if ($customer->hopDongs()->where('TrangThai', 'active')->count() > 0) {
+            // Check if customer has active contracts.
+            $hopDongTable = (new HopDong())->getTable();
+            if (Schema::hasColumn($hopDongTable, 'TrangThai')) {
+                $hasActive = $customer->hopDongs()->where('TrangThai', 'active')->exists();
+            } else {
+                $hasActive = $customer->hopDongs()->where('TrangThaiHopDong', 'HieuLuc')->exists();
+            }
+
+            if ($hasActive) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể xóa khách hàng có hợp đồng đang hoạt động!'
                 ]);
+            }
+
+            // Prevent deleting if there are any contracts or invoices at all (to avoid FK violations)
+            if ($customer->hopDongs()->exists() || $customer->hoaDons()->exists()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Không thể xóa khách hàng vì tồn tại hợp đồng hoặc hóa đơn liên quan. Vui lòng xóa hoặc hủy các bản ghi liên quan trước.'
+                ]);
+            }
+
+            // Delete related one-to-one personal info first to satisfy FK constraints
+            if ($customer->thongTinCaNhan) {
+                $customer->thongTinCaNhan()->delete();
             }
 
             $customer->delete();
