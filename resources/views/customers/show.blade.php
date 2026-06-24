@@ -65,8 +65,8 @@
                 </div>
 
                 <div style="margin-bottom: 0;">
-                    <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">CCCD/MST</label>
-                    <p style="margin: 4px 0 0 0;">{{ $customer->CCCD }}</p>
+                    <label style="font-weight: 600; color: #6C757D; font-size: 11px; text-transform: uppercase;">CCCD/MST</label>
+                    <p style="margin: 4px 0 0 0;">{{ optional($customer->thongTinKhachHang)->SoGiayTo ?? $customer->CCCD ?? 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -101,23 +101,54 @@
                 <h6 class="mb-0 fw-bold">Thông Tin Chi Tiết</h6>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
+                <div class="row g-3">
+                    <div class="col-12">
                         <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Địa Chỉ</label>
-                        <p style="margin: 4px 0 0 0;">{{ $customer->DiaChi }}</p>
+                        <p style="margin: 6px 0 0 0; color: #333;">{{ optional($customer->thongTinKhachHang)->DiaChiThuongTru ?? $customer->DiaChi ?? 'N/A' }}</p>
                     </div>
-                    <div class="col-md-6">
-                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Ngày Tạo</label>
-                        <p style="margin: 4px 0 0 0;">{{ $customer->CreatedAt ? \Carbon\Carbon::parse($customer->CreatedAt)->format('d/m/Y H:i') : 'N/A' }}</p>
-                    </div>
-                </div>
 
-                @if ($customer->GhiChu)
-                    <div style="margin-top: 16px;">
-                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Ghi Chú</label>
-                        <p style="margin: 4px 0 0 0;">{{ $customer->GhiChu }}</p>
+                    <div class="col-md-4">
+                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Ngày Sinh</label>
+                        <p style="margin: 6px 0 0 0;">{{ optional($customer->thongTinKhachHang)->NgaySinh ? \Carbon\Carbon::parse(optional($customer->thongTinKhachHang)->NgaySinh)->format('d/m/Y') : 'N/A' }}</p>
                     </div>
-                @endif
+
+                    <div class="col-md-4">
+                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Giới Tính</label>
+                        @php
+                            $__gender = optional($customer->thongTinKhachHang)->GioiTinh ?? $customer->GioiTinh ?? null;
+                            if ($__gender === 'Nu' || strtolower($__gender) === 'nu') {
+                                $__gender_display = 'Nữ';
+                            } elseif ($__gender === 'Nam' || strtolower($__gender) === 'nam') {
+                                $__gender_display = 'Nam';
+                            } else {
+                                $__gender_display = $__gender ?: 'N/A';
+                            }
+                        @endphp
+                        <p style="margin: 6px 0 0 0;">{{ $__gender_display }}</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Quốc Tịch</label>
+                        <p style="margin: 6px 0 0 0;">{{ optional($customer->thongTinKhachHang)->QuocTich ?? $customer->QuocTich ?? 'N/A' }}</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">CCCD / MST</label>
+                        <p style="margin: 6px 0 0 0;">{{ optional($customer->thongTinKhachHang)->SoGiayTo ?? $customer->CCCD ?? 'N/A' }}</p>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Ngày Tạo</label>
+                        <p style="margin: 6px 0 0 0;">{{ $customer->CreatedAt ? \Carbon\Carbon::parse($customer->CreatedAt)->format('d/m/Y H:i') : 'N/A' }}</p>
+                    </div>
+
+                    @if (optional($customer->thongTinKhachHang)->GhiChu || $customer->GhiChu)
+                        <div class="col-12">
+                            <label style="font-weight: 600; color: #6C757D; font-size: 12px; text-transform: uppercase;">Ghi Chú</label>
+                            <p style="margin: 6px 0 0 0; white-space: pre-line;">{{ optional($customer->thongTinKhachHang)->GhiChu ?? $customer->GhiChu }}</p>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
 
