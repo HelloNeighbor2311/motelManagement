@@ -206,4 +206,43 @@ class CustomerController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * AJAX search for customers (JSON response) used by real-time search.
+     */
+    public function search(Request $request)
+    {
+        $q = $request->get('q', '');
+        $type = $request->get('type', '');
+
+        $query = KhachHang::with('thongTinCaNhan');
+
+        if ($q !== '') {
+            $query->where(function ($s) use ($q) {
+                $s->where('HoTen', 'like', "%{$q}%")
+                  ->orWhere('SoDienThoai', 'like', "%{$q}%")
+                  ->orWhere('Email', 'like', "%{$q}%");
+            });
+        }
+
+        if ($type !== '') {
+            $query->where('LoaiKhachHang', $type === 'Nhan' ? 'CaNhan' : ($type === 'Doanh' ? 'DoanhNghiep' : $type));
+        }
+
+        $results = $query->orderBy('HoTen', 'asc')->take(50)->get();
+
+        $payload = $results->map(function ($c) {
+            return [
+                'Id' => $c->Id,
+                'TenKhachHang' => $c->TenKhachHang,
+                'LoaiKhach' => $c->LoaiKhach,
+                'SoDienThoai' => $c->SoDienThoai,
+                'Email' => $c->Email,
+                'CCCD' => optional($c->thongTinCaNhan)->SoGiayTo ?? $c->CCCD,
+                'HopDongCount' => $c->hopDongs()->count(),
+            ];
+        });
+
+        return response()->json($payload);
+    }
 }

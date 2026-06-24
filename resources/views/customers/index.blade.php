@@ -42,13 +42,13 @@
                 </select>
             </div>
             <div class="col-md-9">
-                <form method="GET" action="{{ route('customers.index') }}" class="d-flex gap-2">
-                    <input type="hidden" name="type" value="{{ request('type') }}">
-                    <input type="text" name="search" class="form-control" placeholder="Tìm tên, số điện thoại, email..." value="{{ request('search') }}">
-                    <button type="submit" class="btn btn-primary">
+                <div class="d-flex gap-2">
+                    <input type="hidden" id="filterType" value="{{ request('type') }}">
+                    <input id="searchInput" type="text" name="search" class="form-control" placeholder="Tìm tên, số điện thoại, email..." value="{{ request('search') }}">
+                    <button id="searchBtn" type="button" class="btn btn-primary">
                         <i class="fas fa-search"></i> Tìm Kiếm
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -66,7 +66,7 @@
                     <th style="text-align: center;">Thao Tác</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="customersTableBody">
                 @forelse ($customers as $customer)
                     <tr>
                         <td><strong>{{ $customer->TenKhachHang }}</strong></td>
@@ -102,6 +102,116 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+        // Debounce helper
+        function debounce(fn, wait) {
+            let t;
+            return function(...args) {
+                clearTimeout(t);
+                t = setTimeout(() => fn.apply(this, args), wait);
+            };
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const typeFilter = document.getElementById('typeFilter');
+        const filterTypeHidden = document.getElementById('filterType');
+        const customersTableBody = document.getElementById('customersTableBody');
+        const searchUrl = '{{ route('customers.search') }}';
+
+        function renderRows(data) {
+            if (!data || data.length === 0) {
+                customersTableBody.innerHTML = `\n                    <tr>\n                        <td colspan="7" class="text-center py-4">\n                            <i class="fas fa-inbox" style="font-size: 32px; color: #ccc;"></i>\n                            <p style="margin-top: 8px; color: #999;">Không có dữ liệu</p>\n                        </td>\n                    </tr>`;
+                return;
+            }
+
+            customersTableBody.innerHTML = data.map(c => `
+                <tr>
+                    <td><strong>${escapeHtml(c.TenKhachHang)}</strong></td>
+                    <td><span class="badge ${c.LoaiKhach === 'Nhan' ? 'bg-info' : 'bg-success'}">${c.LoaiKhach === 'Nhan' ? '👤 Cá Nhân' : '🏢 Doanh Nghiệp'}</span></td>
+                    <td>${escapeHtml(c.SoDienThoai || '')}</td>
+                    <td>${escapeHtml(c.Email || '')}</td>
+                    <td>${escapeHtml(c.CCCD || '')}</td>
+                    <td style="text-align: center; font-weight: 600;">${c.HopDongCount}</td>
+                    <td style="text-align: center;">
+                        <a href="/customers/${c.Id}" class="btn btn-sm btn-info" title="Xem Chi Tiết"><i class="fas fa-eye"></i></a>
+                        <a href="/customers/${c.Id}/edit" class="btn btn-sm btn-warning" title="Chỉnh Sửa"><i class="fas fa-edit"></i></a>
+                        <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="${c.Id}" data-url="/customers/${c.Id}" title="Xóa"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Reattach delete handlers for newly created buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const customerId = this.dataset.id;
+                    const url = this.dataset.url;
+
+                    Swal.fire({
+                        title: 'Xóa Khách Hàng?',
+                        text: 'Hành động này không thể hoàn tác!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Xóa',
+                        cancelButtonText: 'Hủy'
+                    }).then(result => {
+                        if (result.isConfirmed) {
+                            fetch(url, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({title: 'Thành Công', text: data.message, icon: 'success', confirmButtonText: 'OK'})
+                                    .then(() => location.reload());
+                                } else {
+                                    Swal.fire('Lỗi', data.message, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire('Lỗi', 'Có lỗi xảy ra: ' + error, 'error');
+                            });
+                        }
+                    });
+                });
+            });
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                ? unsafe.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+                : '';
+        }
+
+        async function doSearch() {
+            const q = searchInput.value.trim();
+            const type = typeFilter.value || filterTypeHidden.value || '';
+            const url = `${searchUrl}?q=${encodeURIComponent(q)}&type=${encodeURIComponent(type)}`;
+            try {
+                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                const data = await res.json();
+                renderRows(data);
+            } catch (e) {
+                console.error('Search error', e);
+            }
+        }
+
+        const debouncedSearch = debounce(doSearch, 300);
+
+        searchInput.addEventListener('input', debouncedSearch);
+        searchBtn.addEventListener('click', doSearch);
+        typeFilter.addEventListener('change', function() {
+            filterTypeHidden.value = this.value;
+            debouncedSearch();
+        });
+    </script>
 
     @if ($customers->hasPages())
         <div class="card-footer">

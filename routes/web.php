@@ -57,6 +57,8 @@ Route::group([], function () {
 
     // Khách Hàng (Customers)
     Route::prefix('customers')->group(function () {
+        // Real-time search endpoint (returns JSON)
+        Route::get('/search', [CustomerController::class, 'search'])->name('customers.search');
         Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
         Route::get('/create', [CustomerController::class, 'create'])->name('customers.create');
         Route::post('/', [CustomerController::class, 'store'])->name('customers.store');
