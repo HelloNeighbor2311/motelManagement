@@ -117,13 +117,13 @@
                             @endif
                         </td>
                         <td style="text-align: center;">
-                            <a href="{{ route('invoices.show', $invoice->Id) }}" class="btn btn-sm btn-info" title="Xem Chi Tiết">
+                            <a href="{{ route('invoices.show', $invoice->Id) }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('invoices.edit', $invoice->Id) }}" class="btn btn-sm btn-warning" title="Chỉnh Sửa">
+                            <a href="{{ route('invoices.edit', $invoice->Id) }}" class="btn btn-sm btn-warning table-action-btn" title="Chỉnh Sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ $invoice->Id }}" data-url="{{ route('invoices.destroy', $invoice->Id) }}" title="Xóa">
+                            <button type="button" class="btn btn-sm btn-danger delete-btn table-action-btn" data-id="{{ $invoice->Id }}" data-url="{{ route('invoices.destroy', $invoice->Id) }}" title="Xóa">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>

@@ -83,13 +83,13 @@
                                     </small>
                                 </td>
                                 <td style="text-align: center;">
-                                    <a href="{{ route('areas.show', $area->Id) }}" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                    <a href="{{ route('areas.show', $area->Id) }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('areas.edit', $area->Id) }}" class="btn btn-sm btn-warning" title="Chỉnh sửa">
+                                    <a href="{{ route('areas.edit', $area->Id) }}" class="btn btn-sm btn-warning table-action-btn" title="Chỉnh Sửa">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button class="btn btn-sm btn-danger delete-btn" data-area-id="{{ $area->Id }}" title="Xóa">
+                                    <button class="btn btn-sm btn-danger delete-btn table-action-btn" data-area-id="{{ $area->Id }}" title="Xóa">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>

@@ -105,10 +105,10 @@
                                             <span class="badge badge-info">{{ $building->canHos()->count() }}</span>
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="{{ route('buildings.show', $building->Id) }}" class="btn btn-sm btn-info">
+                                            <a href="{{ route('buildings.show', $building->Id) }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('buildings.edit', $building->Id) }}" class="btn btn-sm btn-warning">
+                                            <a href="{{ route('buildings.edit', $building->Id) }}" class="btn btn-sm btn-warning table-action-btn" title="Chỉnh Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>

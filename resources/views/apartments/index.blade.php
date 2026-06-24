@@ -107,13 +107,13 @@
                             <span class="badge {{ $apartment->status_badge }}">{{ $apartment->status_display }}</span>
                         </td>
                         <td style="text-align: center;">
-                            <a href="{{ route('apartments.show', $apartment->Id) }}" class="btn btn-sm btn-info" title="Xem Chi Tiết">
+                            <a href="{{ route('apartments.show', $apartment->Id) }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{{ route('apartments.edit', $apartment->Id) }}" class="btn btn-sm btn-warning" title="Chỉnh Sửa">
+                            <a href="{{ route('apartments.edit', $apartment->Id) }}" class="btn btn-sm btn-warning table-action-btn" title="Chỉnh Sửa">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="{{ $apartment->Id }}" data-url="{{ route('apartments.destroy', $apartment->Id) }}" title="Xóa">
+                            <button type="button" class="btn btn-sm btn-danger delete-btn table-action-btn" data-id="{{ $apartment->Id }}" data-url="{{ route('apartments.destroy', $apartment->Id) }}" title="Xóa">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>

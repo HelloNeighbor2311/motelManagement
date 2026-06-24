@@ -27,6 +27,13 @@
             --dark: #343A40;
             --white: #FFFFFF;
         }
+
+        .table-action-btn {
+            width: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
