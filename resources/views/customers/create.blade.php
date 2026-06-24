@@ -93,6 +93,36 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Ngày Sinh</label>
+                        <input type="date" name="NgaySinh" class="form-control @error('NgaySinh') is-invalid @enderror" value="{{ old('NgaySinh') }}">
+                        @error('NgaySinh')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Giới Tính</label>
+                        <select name="GioiTinh" class="form-select @error('GioiTinh') is-invalid @enderror">
+                            <option value="">-- Chọn --</option>
+                            <option value="Nam" {{ old('GioiTinh') == 'Nam' ? 'selected' : '' }}>Nam</option>
+                            <option value="Nu" {{ old('GioiTinh') == 'Nu' ? 'selected' : '' }}>Nữ</option>
+                        </select>
+                        @error('GioiTinh')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Quốc Tịch</label>
+                        <input type="text" name="QuocTich" class="form-control @error('QuocTich') is-invalid @enderror" placeholder="VD: Việt Nam" value="{{ old('QuocTich') }}">
+                        @error('QuocTich')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label">Ghi Chú</label>
                     <textarea name="GhiChu" class="form-control @error('GhiChu') is-invalid @enderror" placeholder="Ghi chú thêm..." rows="3">{{ old('GhiChu') }}</textarea>

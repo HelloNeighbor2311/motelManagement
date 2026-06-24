@@ -45,6 +45,9 @@ class CustomerController extends Controller
             'Email' => 'required|email|unique:KhachHang,Email',
             'DiaChi' => 'required|string|max:200',
             'CCCD' => 'required|string|max:50',
+            'NgaySinh' => 'nullable|date',
+            'GioiTinh' => 'nullable|in:Nam,Nu',
+            'QuocTich' => 'nullable|string|max:100',
             'LoaiKhach' => 'required|in:Nhan,Doanh',
             'GhiChu' => 'nullable|string|max:500',
         ]);
@@ -71,6 +74,9 @@ class CustomerController extends Controller
                 'KhachHangId' => $customer->Id,
                 'SoGiayTo' => $validated['CCCD'],
                 'DiaChiThuongTru' => $validated['DiaChi'],
+                'NgaySinh' => $validated['NgaySinh'] ?? null,
+                'GioiTinh' => $validated['GioiTinh'] ?? null,
+                'QuocTich' => $validated['QuocTich'] ?? null,
                 'GhiChu' => $validated['GhiChu'] ?? null,
             ]);
 
@@ -102,6 +108,9 @@ class CustomerController extends Controller
             'Email' => 'required|email|unique:KhachHang,Email,' . $id . ',Id',
             'DiaChi' => 'required|string|max:200',
             'CCCD' => 'required|string|max:50',
+            'NgaySinh' => 'nullable|date',
+            'GioiTinh' => 'nullable|in:Nam,Nu',
+            'QuocTich' => 'nullable|string|max:100',
             'LoaiKhach' => 'required|in:Nhan,Doanh',
             'GhiChu' => 'nullable|string|max:500',
         ]);
@@ -129,6 +138,9 @@ class CustomerController extends Controller
                 $tt->update([
                     'SoGiayTo' => $validated['CCCD'],
                     'DiaChiThuongTru' => $validated['DiaChi'],
+                    'NgaySinh' => $validated['NgaySinh'] ?? null,
+                    'GioiTinh' => $validated['GioiTinh'] ?? null,
+                    'QuocTich' => $validated['QuocTich'] ?? null,
                     'GhiChu' => $validated['GhiChu'] ?? null,
                 ]);
             } else {
@@ -136,6 +148,9 @@ class CustomerController extends Controller
                     'KhachHangId' => $customer->Id,
                     'SoGiayTo' => $validated['CCCD'],
                     'DiaChiThuongTru' => $validated['DiaChi'],
+                    'NgaySinh' => $validated['NgaySinh'] ?? null,
+                    'GioiTinh' => $validated['GioiTinh'] ?? null,
+                    'QuocTich' => $validated['QuocTich'] ?? null,
                     'GhiChu' => $validated['GhiChu'] ?? null,
                 ]);
             }
