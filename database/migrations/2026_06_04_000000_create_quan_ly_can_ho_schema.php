@@ -180,8 +180,7 @@ return new class extends Migration
         if (DB::getDriverName() === 'sqlsrv') {
             DB::statement(<<<'SQL'
                 ALTER TABLE TaiKhoanNguoiDung
-                ADD CONSTRAINT CHK_TaiKhoanNguoiDung_TrangThai CHECK (TrangThaiTk IN ('Active', 'Inactive', 'Locked')),
-                    CONSTRAINT CHK_TaiKhoanNguoiDung_VaiTro CHECK (VaiTro IN ('Admin', 'Staff', 'Viewer'));
+                ADD CONSTRAINT CHK_TaiKhoanNguoiDung_TrangThai CHECK (TrangThaiTk IN ('Active', 'Inactive', 'Locked'));
             SQL);
         }
 

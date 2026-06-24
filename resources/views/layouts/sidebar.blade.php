@@ -139,21 +139,9 @@
             </a>
             <ul>
                 <li>
-                    <a href="{{ route('users.index') }}">
+                    <a href="{{ route('profile') }}">
                         <i class="fas fa-user-shield"></i>
                         <span>Tài Khoản</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('roles.index') }}">
-                        <i class="fas fa-key"></i>
-                        <span>Phân Quyền</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('settings.index') }}">
-                        <i class="fas fa-sliders-h"></i>
-                        <span>Cài Đặt</span>
                     </a>
                 </li>
             </ul>

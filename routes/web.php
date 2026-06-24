@@ -12,13 +12,21 @@ use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+// Public routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [App\Http\Controllers\UserController::class, 'showLogin'])->name('login');
+    Route::post('/login', [App\Http\Controllers\UserController::class, 'login'])->name('login.perform');
+    Route::get('/register', [App\Http\Controllers\UserController::class, 'showRegister'])->name('register');
+    Route::post('/register', [App\Http\Controllers\UserController::class, 'register'])->name('register.perform');
+});
+
 // Welcome Page
 Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Dashboard
-Route::group([], function () {
+// Dashboard (protected)
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Khu Vực (Areas)
@@ -119,19 +127,12 @@ Route::group([], function () {
         Route::delete('/{id}', [UserController::class, 'destroy'])->name('users.destroy');
     });
 
-    // Roles
-    Route::prefix('roles')->group(function () {
-        Route::get('/', [UserController::class, 'roles'])->name('roles.index');
-    });
-
-    // Settings
-    Route::prefix('settings')->group(function () {
-        Route::get('/', [UserController::class, 'settings'])->name('settings.index');
-        Route::get('/profile', [UserController::class, 'profileSettings'])->name('settings.profile');
-    });
+    // (Roles and Settings removed from UI and routes)
 
     // Profile
     Route::get('/profile', [UserController::class, 'profile'])->name('profile');
+    Route::patch('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::patch('/profile/password', [UserController::class, 'updatePassword'])->name('profile.password');
 
     // Logout
     Route::post('/logout', [UserController::class, 'logout'])->name('logout');

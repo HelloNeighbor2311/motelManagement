@@ -52,10 +52,7 @@
                     <i class="fas fa-user-circle"></i>
                     <span>Hồ sơ cá nhân</span>
                 </a>
-                <a href="{{ route('settings.profile') }}">
-                    <i class="fas fa-cog"></i>
-                    <span>Cài đặt</span>
-                </a>
+                <!-- Settings removed per request -->
                 <hr style="margin: 8px 0;">
                 <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i>

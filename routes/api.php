@@ -5,6 +5,7 @@ use App\Http\Controllers\KhuVucController;
 use App\Http\Controllers\ToaNhaController;
 use App\Http\Controllers\CanHoController;
 use App\Http\Controllers\TaiKhoanNguoiDungController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\KhachHangController;
 use App\Http\Controllers\ThongTinKhachHangController;
 use App\Http\Controllers\HopDongController;
@@ -16,7 +17,13 @@ Route::middleware('api')->group(function () {
     Route::apiResource('khu-vuc', KhuVucController::class);
     Route::apiResource('toa-nha', ToaNhaController::class);
     Route::apiResource('can-ho', CanHoController::class);
-    Route::apiResource('tai-khoan', TaiKhoanNguoiDungController::class);
+    // tai-khoan resource handled by UserController (merged)
+    Route::get('tai-khoan', [UserController::class, 'taiKhoanIndex']);
+    Route::post('tai-khoan', [UserController::class, 'taiKhoanStore']);
+    Route::get('tai-khoan/{id}', [UserController::class, 'taiKhoanShow']);
+    Route::put('tai-khoan/{id}', [UserController::class, 'taiKhoanUpdate']);
+    Route::patch('tai-khoan/{id}', [UserController::class, 'taiKhoanUpdate']);
+    Route::delete('tai-khoan/{id}', [UserController::class, 'taiKhoanDestroy']);
     Route::apiResource('khach-hang', KhachHangController::class);
     Route::apiResource('thong-tin-khach-hang', ThongTinKhachHangController::class);
     Route::apiResource('hop-dong', HopDongController::class);
