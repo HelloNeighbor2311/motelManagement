@@ -192,7 +192,7 @@
                             <td><span class="badge {{ $apartment->status_badge }}">{{ $apartment->status_display }}</span></td>
                             <td>{{ $apartment->CreatedAt ? \Carbon\Carbon::parse($apartment->CreatedAt)->format('d/m/Y') : 'N/A' }}</td>
                             <td style="text-align: center;">
-                                <a href="{{ route('apartments.show', $apartment->Id) }}" class="btn btn-sm btn-primary">Chi Tiết</a>
+                                <a href="{{ route('apartments.show', $apartment->Id) }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết"><i class="fas fa-eye"></i></a>
                             </td>
                         </tr>
                     @empty

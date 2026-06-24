@@ -145,12 +145,6 @@
 </div>
 
 <script>
-    // Format số tiền khi input
-    document.getElementById('SoTien').addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        this.value = value ? parseInt(value).toLocaleString('vi-VN') : '';
-    });
-
     // Auto-fill tháng/năm khi chọn ngày
     document.getElementById('NgayGiaoDich').addEventListener('change', function() {
         if (this.value) {

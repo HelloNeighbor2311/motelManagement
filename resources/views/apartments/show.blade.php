@@ -110,7 +110,7 @@
                                             <span class="badge" style="background-color: #ffc107; color: #333;">{{ $contract->TrangThaiHopDong ?? 'N/A' }}</span>
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="{{ route('contracts.show', $contract->Id ?? '#') }}" class="btn btn-sm btn-info">
+                                            <a href="{{ route('contracts.show', $contract->Id ?? '#') }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>

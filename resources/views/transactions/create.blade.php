@@ -56,7 +56,7 @@
                         <span class="text-danger">*</span> Số Tiền (đ)
                     </label>
                     <input type="number" id="SoTien" name="SoTien" class="form-control @error('SoTien') is-invalid @enderror" 
-                           placeholder="Nhập số tiền" value="{{ old('SoTien') }}" min="0" step="1000" required>
+                           placeholder="Nhập số tiền" value="{{ old('SoTien') }}" min="0" required>
                     @error('SoTien')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -144,12 +144,6 @@
 </div>
 
 <script>
-    // Format số tiền khi input
-    document.getElementById('SoTien').addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        this.value = value ? parseInt(value).toLocaleString('vi-VN') : '';
-    });
-
     // Auto-fill tháng/năm khi chọn ngày
     document.getElementById('NgayGiaoDich').addEventListener('change', function() {
         if (this.value) {

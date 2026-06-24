@@ -104,10 +104,10 @@
                                             <span class="badge {{ $apartment->status_badge }}">{{ $apartment->status_display }}</span>
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="{{ route('apartments.show', $apartment->Id) }}" class="btn btn-sm btn-info">
+                                            <a href="{{ route('apartments.show', $apartment->Id) }}" class="btn btn-sm btn-info table-action-btn" title="Xem Chi Tiết">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('apartments.edit', $apartment->Id) }}" class="btn btn-sm btn-warning">
+                                            <a href="{{ route('apartments.edit', $apartment->Id) }}" class="btn btn-sm btn-warning table-action-btn" title="Chỉnh Sửa">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         </td>
