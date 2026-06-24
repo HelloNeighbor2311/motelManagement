@@ -25,34 +25,59 @@
 @endif
 
 <div class="card mb-3">
-	<div class="card-body">
-		<div class="row g-3">
-			<div class="col-md-3">
-				<div style="padding: 16px; background: linear-gradient(135deg,#43e97b 0%,#38f9d7 100%); border-radius:8px;color:white;text-align:center;">
-					<p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">Tổng Thu</p>
-					<p style="margin:8px 0 0 0;font-size:24px;font-weight:700">{{ number_format($statistics['totalIncome'] ?? 0, 0, ',', '.') }} đ</p>
-				</div>
-			</div>
-			<div class="col-md-3">
-				<div style="padding: 16px; background: linear-gradient(135deg,#f093fb 0%,#f5576c 100%); border-radius:8px;color:white;text-align:center;">
-					<p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">Tổng Chi</p>
-					<p style="margin:8px 0 0 0;font-size:24px;font-weight:700">{{ number_format($statistics['totalExpense'] ?? 0, 0, ',', '.') }} đ</p>
-				</div>
-			</div>
-			<div class="col-md-3">
-				<div style="padding: 16px; background: linear-gradient(135deg,#4facfe 0%,#00f2fe 100%); border-radius:8px;color:white;text-align:center;">
-					<p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">Thu Tháng</p>
-					<p style="margin:8px 0 0 0;font-size:20px;font-weight:700">{{ number_format($statistics['monthIncome'] ?? 0, 0, ',', '.') }} đ</p>
-				</div>
-			</div>
-			<div class="col-md-3">
-				<div style="padding: 16px; background: linear-gradient(135deg,#ff9a9e 0%,#fecfef 100%); border-radius:8px;color:white;text-align:center;">
-					<p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">Chi Tháng</p>
-					<p style="margin:8px 0 0 0;font-size:20px;font-weight:700">{{ number_format($statistics['monthExpense'] ?? 0, 0, ',', '.') }} đ</p>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="card-body">
+        <div class="row g-3">
+
+            <div class="col-md-3 d-flex">
+                <div class="w-100 h-100 d-flex flex-column justify-content-center"
+                     style="padding:16px;background:#28a745;border-radius:8px;color:white;text-align:center;">
+                    <p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">
+                        Tổng Thu
+                    </p>
+                    <p style="margin:8px 0 0 0;font-size:24px;font-weight:700;">
+                        {{ number_format($statistics['totalIncome'] ?? 0, 0, ',', '.') }} đ
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3 d-flex">
+                <div class="w-100 h-100 d-flex flex-column justify-content-center"
+                     style="padding:16px;background:#dc3545;border-radius:8px;color:white;text-align:center;">
+                    <p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">
+                        Tổng Chi
+                    </p>
+                    <p style="margin:8px 0 0 0;font-size:24px;font-weight:700;">
+                        {{ number_format($statistics['totalExpense'] ?? 0, 0, ',', '.') }} đ
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3 d-flex">
+                <div class="w-100 h-100 d-flex flex-column justify-content-center"
+                     style="padding:16px;background:#17a2b8;border-radius:8px;color:white;text-align:center;">
+                    <p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">
+                        Thu Tháng
+                    </p>
+                    <p style="margin:8px 0 0 0;font-size:24px;font-weight:700;">
+                        {{ number_format($statistics['monthIncome'] ?? 0, 0, ',', '.') }} đ
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-3 d-flex">
+                <div class="w-100 h-100 d-flex flex-column justify-content-center"
+                     style="padding:16px;background:#dc3545;border-radius:8px;color:white;text-align:center;">
+                    <p style="margin:0;font-size:12px;text-transform:uppercase;opacity:.9">
+                        Chi Tháng
+                    </p>
+                    <p style="margin:8px 0 0 0;font-size:24px;font-weight:700;">
+                        {{ number_format($statistics['monthExpense'] ?? 0, 0, ',', '.') }} đ
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>
 
 <div class="card">

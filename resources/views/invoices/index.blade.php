@@ -28,7 +28,7 @@
     <div class="card-body">
         <div class="row g-3">
             <div class="col-md-3">
-                <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white; text-align: center;">
+                <div style="padding: 16px; background: #dc3545; border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Chưa Thanh Toán</p>
                     <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
                         {{ \App\Models\HoaDon::where('TrangThaiThanhToan', 'ChuaThanhToan')->count() }}
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div style="padding: 16px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; color: white; text-align: center;">
+                <div style="padding: 16px; background: #ffc107; border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Quá Hạn</p>
                     <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
                         {{ \App\Models\HoaDon::where('TrangThaiThanhToan', 'QuaHan')->count() }}
@@ -44,7 +44,7 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div style="padding: 16px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; color: white; text-align: center;">
+                <div style="padding: 16px; background: #17a2b8; border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Đã Thanh Toán</p>
                     <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
                         {{ \App\Models\HoaDon::where('TrangThaiThanhToan', 'DaThanhToan')->count() }}
@@ -52,9 +52,9 @@
                 </div>
             </div>
             <div class="col-md-3">
-                <div style="padding: 16px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 8px; color: white; text-align: center;">
+                <div style="padding: 16px; background: #28a745; border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Tổng Doanh Thu</p>
-                    <p style="margin: 8px 0 0 0; font-size: 18px; font-weight: 700;">
+                    <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
                         {{ number_format(\App\Models\HoaDon::sum('SoTien'), 0, ',', '.') }} đ
                     </p>
                 </div>
