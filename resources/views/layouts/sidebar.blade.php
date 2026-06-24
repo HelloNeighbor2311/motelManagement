@@ -117,12 +117,6 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('reports.quarterly') }}">
-                        <i class="fas fa-calendar"></i>
-                        <span>Báo Cáo Quý</span>
-                    </a>
-                </li>
-                <li>
                     <a href="{{ route('reports.yearly') }}">
                         <i class="fas fa-calendar"></i>
                         <span>Báo Cáo Năm</span>
@@ -130,6 +124,7 @@
                 </li>
             </ul>
         </li>
+                {{-- Báo Cáo Quý đã bị loại bỏ - chỉ còn Tháng và Năm --}}
 
         <!-- Hệ Thống -->
         <li class="has-submenu">

@@ -19,7 +19,7 @@ class BaoCaoTaiChinhController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->only(['TaiKhoanId','LoaiBaoCao','Thang','Quy','Nam','TongThu','TongChi','TienThueThu','TienDatCocThu','ChiPhiVanHanh']);
+        $data = $request->only(['TaiKhoanId','LoaiBaoCao','Thang','Nam','TongThu','TongChi','TienThueThu','TienDatCocThu','ChiPhiVanHanh']);
         $model = BaoCaoTaiChinh::create($data);
         return response($model, 201);
     }
@@ -27,7 +27,7 @@ class BaoCaoTaiChinhController extends Controller
     public function update(Request $request, $id)
     {
         $m = BaoCaoTaiChinh::findOrFail($id);
-        $m->update($request->only(['TaiKhoanId','LoaiBaoCao','Thang','Quy','Nam','TongThu','TongChi','TienThueThu','TienDatCocThu','ChiPhiVanHanh']));
+        $m->update($request->only(['TaiKhoanId','LoaiBaoCao','Thang','Nam','TongThu','TongChi','TienThueThu','TienDatCocThu','ChiPhiVanHanh']));
         return $m;
     }
 

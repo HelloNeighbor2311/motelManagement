@@ -10,5 +10,5 @@ class BaoCaoTaiChinh extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     public $timestamps = false;
-    protected $fillable = ['TaiKhoanId', 'LoaiBaoCao', 'Thang', 'Quy', 'Nam', 'TongThu', 'TongChi', 'TienThueThu', 'TienDatCocThu', 'ChiPhiVanHanh'];
+    protected $fillable = ['TaiKhoanId', 'LoaiBaoCao', 'Thang', 'Nam', 'TongThu', 'TongChi', 'TienThueThu', 'TienDatCocThu', 'ChiPhiVanHanh'];
 }

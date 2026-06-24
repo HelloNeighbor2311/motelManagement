@@ -113,7 +113,6 @@ Route::middleware('auth')->group(function () {
     // Báo Cáo (Reports)
     Route::prefix('reports')->group(function () {
         Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
-        Route::get('/quarterly', [ReportController::class, 'quarterly'])->name('reports.quarterly');
         Route::get('/yearly', [ReportController::class, 'yearly'])->name('reports.yearly');
     });
 

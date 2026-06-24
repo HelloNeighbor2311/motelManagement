@@ -19,6 +19,10 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             KhuVucSeeder::class,
+            ToaNhaSeeder::class,
+            CanHoSeeder::class,
+            KhachHangSeeder::class,
+            HopDongSeeder::class,
         ]);
 
         User::firstOrCreate(
