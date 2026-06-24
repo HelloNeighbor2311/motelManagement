@@ -1,59 +1,51 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white p-6 rounded shadow">
-        <h1 class="text-xl font-semibold mb-4">Đăng ký</h1>
+<form method="POST" action="{{ route('register.perform') }}">
+    @csrf
 
-        @if($errors->any())
-            <div class="mb-4 text-red-600">
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+    <div class="row g-3">
+        <div class="col-12">
+            <label for="name" class="form-label fw-semibold">Tên</label>
+            <input id="name" name="name" value="{{ old('name') }}" required class="form-control" placeholder="Nhập họ tên">
+        </div>
 
-        <form method="POST" action="{{ route('register.perform') }}">
-            @csrf
+        <div class="col-12">
+            <label for="username" class="form-label fw-semibold">Tên đăng nhập</label>
+            <input id="username" name="username" value="{{ old('username') }}" required class="form-control" placeholder="Chọn tên đăng nhập">
+        </div>
 
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Tên</label>
-                <input name="name" value="{{ old('name') }}" required class="w-full border px-3 py-2 rounded" />
-            </div>
+        <div class="col-12">
+            <label for="phone" class="form-label fw-semibold">Số điện thoại</label>
+            <input id="phone" name="phone" value="{{ old('phone') }}" class="form-control" placeholder="Nhập số điện thoại">
+        </div>
 
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Tên đăng nhập</label>
-                <input name="username" value="{{ old('username') }}" required class="w-full border px-3 py-2 rounded" />
-            </div>
+        <div class="col-12">
+            <label for="email" class="form-label fw-semibold">Email</label>
+            <input id="email" name="email" value="{{ old('email') }}" type="email" required class="form-control" placeholder="Nhập email">
+        </div>
 
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Số điện thoại</label>
-                <input name="phone" value="{{ old('phone') }}" class="w-full border px-3 py-2 rounded" />
-            </div>
+        <div class="col-12">
+            <label for="password" class="form-label fw-semibold">Mật khẩu</label>
+            <input id="password" name="password" type="password" required class="form-control" placeholder="Tạo mật khẩu">
+        </div>
 
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Email</label>
-                <input name="email" value="{{ old('email') }}" type="email" required class="w-full border px-3 py-2 rounded" />
-            </div>
+        <div class="col-12">
+            <label for="password_confirmation" class="form-label fw-semibold">Xác nhận mật khẩu</label>
+            <input id="password_confirmation" name="password_confirmation" type="password" required class="form-control" placeholder="Nhập lại mật khẩu">
+        </div>
 
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Mật khẩu</label>
-                <input name="password" type="password" required class="w-full border px-3 py-2 rounded" />
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Xác nhận mật khẩu</label>
-                <input name="password_confirmation" type="password" required class="w-full border px-3 py-2 rounded" />
-            </div>
-
-            <div>
-                <button class="btn btn-primary w-full">Đăng ký</button>
-            </div>
-        </form>
-
-        <p class="mt-4 text-sm">Đã có tài khoản? <a href="{{ route('login') }}" class="text-blue-600">Đăng nhập</a></p>
+        <div class="col-12 mt-2">
+            <button type="submit" class="btn btn-primary btn-auth w-100">
+                <i class="fas fa-user-plus me-2"></i>Đăng ký
+            </button>
+        </div>
     </div>
+</form>
+@endsection
+
+@section('footer')
+<div class="text-center">
+    Đã có tài khoản? <a href="{{ route('login') }}" class="auth-link">Đăng nhập</a>
 </div>
 @endsection

@@ -1,40 +1,35 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('content')
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="w-full max-w-md bg-white p-6 rounded shadow">
-        <h1 class="text-xl font-semibold mb-4">Đăng nhập</h1>
+<form method="POST" action="{{ route('login.perform') }}">
+    @csrf
 
-        @if($errors->any())
-            <div class="mb-4 text-red-600">
-                {{ $errors->first() }}
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('login.perform') }}">
-            @csrf
-
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Tên đăng nhập</label>
-                <input name="username" value="{{ old('username') }}" required class="w-full border px-3 py-2 rounded" />
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-sm font-medium mb-1">Mật khẩu</label>
-                <input name="password" type="password" required class="w-full border px-3 py-2 rounded" />
-            </div>
-
-            <div class="flex items-center justify-between mb-4">
-                <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="remember"> Ghi nhớ</label>
-                <a href="#" class="text-sm text-blue-600">Quên mật khẩu?</a>
-            </div>
-
-            <div>
-                <button class="btn btn-primary w-full">Đăng nhập</button>
-            </div>
-        </form>
-
-        <p class="mt-4 text-sm">Chưa có tài khoản? <a href="{{ route('register') }}" class="text-blue-600">Đăng ký</a></p>
+    <div class="mb-3">
+        <label for="username" class="form-label fw-semibold">Tên đăng nhập</label>
+        <input id="username" name="username" value="{{ old('username') }}" required autofocus class="form-control" placeholder="Nhập tên đăng nhập">
     </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label fw-semibold">Mật khẩu</label>
+        <input id="password" name="password" type="password" required class="form-control" placeholder="Nhập mật khẩu">
+    </div>
+
+    <div class="d-flex align-items-center justify-content-between mb-4 gap-3 flex-wrap">
+        <label class="form-check mb-0">
+            <input class="form-check-input" type="checkbox" name="remember">
+            <span class="form-check-label">Ghi nhớ đăng nhập</span>
+        </label>
+        <a href="#" class="auth-link">Quên mật khẩu?</a>
+    </div>
+
+    <button type="submit" class="btn btn-primary btn-auth w-100">
+        <i class="fas fa-right-to-bracket me-2"></i>Đăng nhập
+    </button>
+</form>
+@endsection
+
+@section('footer')
+<div class="text-center">
+    Chưa có tài khoản? <a href="{{ route('register') }}" class="auth-link">Đăng ký ngay</a>
 </div>
 @endsection
