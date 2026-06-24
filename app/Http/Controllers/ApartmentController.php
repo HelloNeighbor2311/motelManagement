@@ -38,6 +38,11 @@ class ApartmentController extends Controller
             $query->where('TrangThai', $request->string('status')->toString());
         }
 
+        // API: return JSON list when requested
+        if ($request->wantsJson()) {
+            return $query->orderBy('ToaNhaId', 'asc')->orderBy('Tang', 'asc')->get();
+        }
+
         $apartments = $query->orderBy('ToaNhaId', 'asc')->orderBy('Tang', 'asc')->paginate(15);
         $areas = KhuVuc::orderBy('TenKhuVuc', 'asc')->get();
         $buildings = ToaNha::with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
@@ -70,10 +75,18 @@ class ApartmentController extends Controller
         ]);
 
         try {
-            CanHo::create($validated);
+            $model = CanHo::create($validated);
+
+            if ($request->wantsJson()) {
+                return response($model, 201);
+            }
 
             return redirect()->route('apartments.index')->with('success', 'Thêm căn hộ thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: '.$e->getMessage());
         }
     }
@@ -81,6 +94,10 @@ class ApartmentController extends Controller
     public function show($id)
     {
         $apartment = CanHo::with('toaNha.khuVuc', 'hopDongs.khachHang')->findOrFail($id);
+
+        if (request()->wantsJson()) {
+            return $apartment;
+        }
 
         return view('apartments.show', compact('apartment'));
     }
@@ -116,9 +133,16 @@ class ApartmentController extends Controller
 
         try {
             $apartment->update($validated);
+            if ($request->wantsJson()) {
+                return $apartment;
+            }
 
             return redirect()->route('apartments.show', $apartment->Id)->with('success', 'Cập nhật căn hộ thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: '.$e->getMessage());
         }
     }
@@ -137,6 +161,13 @@ class ApartmentController extends Controller
             }
 
             $apartment->delete();
+
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Xóa căn hộ thành công!',
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

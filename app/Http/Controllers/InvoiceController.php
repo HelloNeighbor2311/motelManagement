@@ -27,6 +27,10 @@ class InvoiceController extends Controller
             });
         }
 
+        if ($request->wantsJson()) {
+            return $query->orderBy('NgayPhatHanh', 'desc')->get();
+        }
+
         $invoices = $query->orderBy('NgayPhatHanh', 'desc')->paginate(15);
 
         return view('invoices.index', compact('invoices'));
@@ -48,14 +52,28 @@ class InvoiceController extends Controller
             'NgayPhatHanh' => 'required|date',
             'NgayDenHan' => 'required|date|after_or_equal:NgayPhatHanh',
             'SoTien' => 'required|numeric|min:0',
+            'LoaiHoaDon' => 'nullable|string|max:50',
+            'Thang' => 'nullable|integer|min:1|max:12',
+            'Nam' => 'nullable|integer|min:2000',
             'GhiChu' => 'nullable|string|max:500',
-            'TrangThaiThanhToan' => 'required|in:ChuaThanhToan,DaThanhToan,QuaHan',
+            'TrangThaiThanhToan' => 'nullable|in:ChuaThanhToan,DaThanhToan,QuaHan,HuyBo',
         ]);
 
         try {
-            HoaDon::create($validated);
+            $validated['TrangThaiThanhToan'] = $validated['TrangThaiThanhToan'] ?? 'ChuaThanhToan';
+            $validated['Thang'] = $validated['Thang'] ?? date('n', strtotime($validated['NgayPhatHanh']));
+            $validated['Nam'] = $validated['Nam'] ?? date('Y', strtotime($validated['NgayPhatHanh']));
+            $invoice = HoaDon::create($validated);
+            if ($request->wantsJson()) {
+                return response($invoice, 201);
+            }
+
             return redirect()->route('invoices.index')->with('success', 'Thêm hóa đơn thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -63,6 +81,10 @@ class InvoiceController extends Controller
     public function show($id)
     {
         $invoice = HoaDon::with(['khachHang', 'hopDong'])->findOrFail($id);
+        if (request()->wantsJson()) {
+            return $invoice;
+        }
+
         return view('invoices.show', compact('invoice'));
     }
 
@@ -71,6 +93,11 @@ class InvoiceController extends Controller
         $invoice = HoaDon::findOrFail($id);
         $customers = KhachHang::orderBy('HoTen', 'asc')->get();
         $contracts = HopDong::with('canHo')->get();
+        if (request()->wantsJson()) {
+            $invoice->load(['khachHang', 'hopDong']);
+            return $invoice;
+        }
+
         return view('invoices.edit', compact('invoice', 'customers', 'contracts'));
     }
 
@@ -85,14 +112,28 @@ class InvoiceController extends Controller
             'NgayPhatHanh' => 'required|date',
             'NgayDenHan' => 'required|date|after_or_equal:NgayPhatHanh',
             'SoTien' => 'required|numeric|min:0',
+            'LoaiHoaDon' => 'nullable|string|max:50',
+            'Thang' => 'nullable|integer|min:1|max:12',
+            'Nam' => 'nullable|integer|min:2000',
             'GhiChu' => 'nullable|string|max:500',
-            'TrangThaiThanhToan' => 'required|in:ChuaThanhToan,DaThanhToan,QuaHan',
+            'TrangThaiThanhToan' => 'nullable|in:ChuaThanhToan,DaThanhToan,QuaHan,HuyBo',
         ]);
 
         try {
+            $validated['TrangThaiThanhToan'] = $validated['TrangThaiThanhToan'] ?? $invoice->TrangThaiThanhToan;
+            $validated['Thang'] = $validated['Thang'] ?? date('n', strtotime($validated['NgayPhatHanh']));
+            $validated['Nam'] = $validated['Nam'] ?? date('Y', strtotime($validated['NgayPhatHanh']));
             $invoice->update($validated);
+            if ($request->wantsJson()) {
+                return $invoice;
+            }
+
             return redirect()->route('invoices.show', $invoice->Id)->with('success', 'Cập nhật hóa đơn thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -102,6 +143,10 @@ class InvoiceController extends Controller
         try {
             $invoice = HoaDon::findOrFail($id);
             $invoice->delete();
+            if (request()->wantsJson()) {
+                return response(null, 204);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Xóa hóa đơn thành công!'

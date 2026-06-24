@@ -24,8 +24,13 @@ class BuildingController extends Controller
                         ->orWhere('MoTa', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('TenToaNha')
-            ->get();
+            ->orderBy('TenToaNha');
+
+        if ($request->wantsJson()) {
+            return $buildings->get();
+        }
+
+        $buildings = $buildings->get();
         $areas = KhuVuc::orderBy('TenKhuVuc')->get();
 
         return view('buildings.index', compact('buildings', 'areas'));
@@ -50,11 +55,19 @@ class BuildingController extends Controller
         ]);
 
         try {
-            ToaNha::create($validated);
+            $building = ToaNha::create($validated);
+
+            if ($request->wantsJson()) {
+                return response($building, 201);
+            }
 
             return redirect()->route('buildings.index')
                 ->with('success', 'Thêm tòa nhà thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()
                 ->with('error', 'Lỗi: '.$e->getMessage());
         }
@@ -64,6 +77,10 @@ class BuildingController extends Controller
     public function show($id)
     {
         $building = ToaNha::with('khuVuc', 'canHos')->findOrFail($id);
+
+        if (request()->wantsJson()) {
+            return $building->loadCount('canHos');
+        }
 
         return view('buildings.show', compact('building'));
     }
@@ -92,9 +109,17 @@ class BuildingController extends Controller
         try {
             $building->update($validated);
 
+            if (request()->wantsJson()) {
+                return $building;
+            }
+
             return redirect()->route('buildings.index')
                 ->with('success', 'Cập nhật tòa nhà thành công!');
         } catch (\Exception $e) {
+            if (request()->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()
                 ->with('error', 'Lỗi: '.$e->getMessage());
         }
@@ -108,6 +133,13 @@ class BuildingController extends Controller
 
             // Check if building has apartments
             if ($building->canHos()->count() > 0) {
+                if (request()->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Không thể xóa tòa nhà đang có căn hộ!',
+                    ], 400);
+                }
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể xóa tòa nhà đang có căn hộ!',
@@ -115,6 +147,13 @@ class BuildingController extends Controller
             }
 
             $building->delete();
+
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Xóa tòa nhà thành công!',
+                ]);
+            }
 
             return response()->json([
                 'success' => true,

@@ -28,6 +28,10 @@ class CustomerController extends Controller
             $query->where('LoaiKhachHang', $request->type === 'Nhan' ? 'CaNhan' : ($request->type === 'Doanh' ? 'DoanhNghiep' : $request->type));
         }
 
+        if ($request->wantsJson()) {
+            return $query->orderBy('HoTen', 'asc')->get();
+        }
+
         $customers = $query->orderBy('HoTen', 'asc')->paginate(15);
 
         return view('customers.index', compact('customers'));
@@ -40,6 +44,18 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->wantsJson() && $request->filled('HoTen')) {
+            $validated = $request->validate([
+                'HoTen' => 'required|string|max:200',
+                'LoaiKhachHang' => 'required|in:CaNhan,DoanhNghiep,NuocNgoai',
+                'SoDienThoai' => 'required|string|max:20|unique:KhachHang,SoDienThoai',
+                'Email' => 'nullable|email|max:255|unique:KhachHang,Email',
+                'QuocTich' => 'nullable|string|max:100',
+            ]);
+
+            return response(KhachHang::create($validated), 201);
+        }
+
         $validated = $request->validate([
             'TenKhachHang' => 'required|string|max:200',
             'SoDienThoai' => 'required|string|max:20|unique:KhachHang,SoDienThoai',
@@ -65,6 +81,10 @@ class CustomerController extends Controller
 
             // Ensure CCCD is unique across ThongTinKhachHang
             if (ThongTinKhachHang::where('SoGiayTo', $validated['CCCD'])->exists()) {
+                if ($request->wantsJson()) {
+                    return response()->json(['message' => 'CCCD/MST đã tồn tại trong hệ thống.'], 422);
+                }
+
                 return back()->withInput()->withErrors(['CCCD' => 'CCCD/MST đã tồn tại trong hệ thống.']);
             }
 
@@ -80,9 +100,16 @@ class CustomerController extends Controller
                 'QuocTich' => $validated['QuocTich'] ?? null,
                 'GhiChu' => $validated['GhiChu'] ?? null,
             ]);
+            if ($request->wantsJson()) {
+                return response($customer->load('thongTinCaNhan'), 201);
+            }
 
             return redirect()->route('customers.index')->with('success', 'Thêm khách hàng thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -90,6 +117,11 @@ class CustomerController extends Controller
     public function show($id)
     {
         $customer = KhachHang::with('thongTinCaNhan', 'hopDongs', 'hoaDons')->findOrFail($id);
+
+        if (request()->wantsJson()) {
+            return $customer;
+        }
+
         return view('customers.show', compact('customer'));
     }
 
@@ -102,6 +134,20 @@ class CustomerController extends Controller
     public function update(Request $request, $id)
     {
         $customer = KhachHang::findOrFail($id);
+
+        if ($request->wantsJson() && ! $request->has('TenKhachHang')) {
+            $validated = $request->validate([
+                'HoTen' => 'sometimes|required|string|max:200',
+                'LoaiKhachHang' => 'sometimes|required|in:CaNhan,DoanhNghiep,NuocNgoai',
+                'SoDienThoai' => 'sometimes|required|string|max:20|unique:KhachHang,SoDienThoai,' . $id . ',Id',
+                'Email' => 'nullable|email|max:255|unique:KhachHang,Email,' . $id . ',Id',
+                'QuocTich' => 'nullable|string|max:100',
+            ]);
+
+            $customer->update($validated);
+
+            return $customer;
+        }
 
         $validated = $request->validate([
             'TenKhachHang' => 'required|string|max:200',
@@ -130,6 +176,10 @@ class CustomerController extends Controller
 
             // Ensure CCCD uniqueness (not used as a column on KhachHang)
             if (ThongTinKhachHang::where('SoGiayTo', $validated['CCCD'])->where('KhachHangId', '<>', $id)->exists()) {
+                if ($request->wantsJson()) {
+                    return response()->json(['message' => 'CCCD/MST đã tồn tại trong hệ thống.'], 422);
+                }
+
                 return back()->withInput()->withErrors(['CCCD' => 'CCCD/MST đã tồn tại trong hệ thống.']);
             }
 
@@ -156,8 +206,16 @@ class CustomerController extends Controller
                 ]);
             }
 
+            if ($request->wantsJson()) {
+                return $customer->load('thongTinCaNhan');
+            }
+
             return redirect()->route('customers.show', $customer->Id)->with('success', 'Cập nhật khách hàng thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -179,7 +237,7 @@ class CustomerController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể xóa khách hàng có hợp đồng đang hoạt động!'
-                ]);
+                ], 409);
             }
 
             // Prevent deleting if there are any contracts or invoices at all (to avoid FK violations)
@@ -187,7 +245,7 @@ class CustomerController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể xóa khách hàng vì tồn tại hợp đồng hoặc hóa đơn liên quan. Vui lòng xóa hoặc hủy các bản ghi liên quan trước.'
-                ]);
+                ], 409);
             }
 
             // Delete related one-to-one personal info first to satisfy FK constraints
@@ -196,6 +254,10 @@ class CustomerController extends Controller
             }
 
             $customer->delete();
+            if (request()->wantsJson()) {
+                return response(null, 204);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Xóa khách hàng thành công!'

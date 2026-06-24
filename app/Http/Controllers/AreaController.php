@@ -16,11 +16,17 @@ class AreaController extends Controller
 
                 $query->where(function ($query) use ($search) {
                     $query->where('TenKhuVuc', 'like', "%{$search}%")
-                        ->orWhere('DiaChi', 'like', "%{$search}%");
+                        ->orWhere('DiaChi', 'like', "%{$search}%")
+                        ->orWhere('MoTa', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('TenKhuVuc')
-            ->get();
+            ->orderBy('TenKhuVuc');
+
+        if ($request->wantsJson()) {
+            return $areas->get();
+        }
+
+        $areas = $areas->get();
 
         return view('areas.index', compact('areas'));
     }
@@ -41,11 +47,19 @@ class AreaController extends Controller
         ]);
 
         try {
-            KhuVuc::create($validated);
+            $area = KhuVuc::create($validated);
+
+            if ($request->wantsJson()) {
+                return response($area, 201);
+            }
 
             return redirect()->route('areas.index')
                 ->with('success', 'Thêm khu vực thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()
                 ->with('error', 'Lỗi: '.$e->getMessage());
         }
@@ -56,6 +70,12 @@ class AreaController extends Controller
     {
         $area = KhuVuc::findOrFail($id);
         $buildings = $area->toaNhas()->with('canHos')->get();
+
+        if (request()->wantsJson()) {
+            $area->loadCount('toaNhas');
+            $area->setRelation('toaNhas', $buildings);
+            return $area;
+        }
 
         return view('areas.show', compact('area', 'buildings'));
     }
@@ -82,9 +102,17 @@ class AreaController extends Controller
         try {
             $area->update($validated);
 
+            if (request()->wantsJson()) {
+                return $area;
+            }
+
             return redirect()->route('areas.index')
                 ->with('success', 'Cập nhật khu vực thành công!');
         } catch (\Exception $e) {
+            if (request()->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()
                 ->with('error', 'Lỗi: '.$e->getMessage());
         }
@@ -98,6 +126,13 @@ class AreaController extends Controller
 
             // Check if area has buildings
             if ($area->toaNhas()->count() > 0) {
+                if (request()->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Không thể xóa khu vực đang có tòa nhà!',
+                    ], 400);
+                }
+
                 return response()->json([
                     'success' => false,
                     'message' => 'Không thể xóa khu vực đang có tòa nhà!',
@@ -105,6 +140,10 @@ class AreaController extends Controller
             }
 
             $area->delete();
+
+            if (request()->wantsJson()) {
+                return response(null, 204);
+            }
 
             return response()->json([
                 'success' => true,

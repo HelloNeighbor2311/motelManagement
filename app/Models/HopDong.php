@@ -75,4 +75,9 @@ class HopDong extends Model
 
         $this->attributes['TrangThaiHopDong'] = $map[$value] ?? $value;
     }
+
+    public function getGiaThueAttribute()
+    {
+        return $this->GiaThueThaoThuan;
+    }
 }

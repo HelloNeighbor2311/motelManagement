@@ -53,4 +53,52 @@ class ReportController extends Controller
 
         return view('reports.yearly', compact('years', 'year', 'records', 'totals'));
     }
+
+    // API: list all finance reports
+    public function index(Request $request)
+    {
+        if ($request->wantsJson()) {
+            return BaoCaoTaiChinh::all();
+        }
+
+        abort(404);
+    }
+
+    public function show($id)
+    {
+        $model = BaoCaoTaiChinh::findOrFail($id);
+
+        if (request()->wantsJson()) {
+            return $model;
+        }
+
+        abort(404);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate(['TaiKhoanId' => ['nullable'], 'LoaiBaoCao' => ['required', 'string'], 'Thang' => ['nullable','integer'], 'Nam' => ['required','integer'], 'TongThu' => ['nullable','numeric'], 'TongChi' => ['nullable','numeric'], 'TienThueThu' => ['nullable','numeric'], 'TienDatCocThu' => ['nullable','numeric'], 'ChiPhiVanHanh' => ['nullable','numeric']]);
+
+        $model = BaoCaoTaiChinh::create($data);
+
+        return response($model, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $m = BaoCaoTaiChinh::findOrFail($id);
+        $data = $request->validate(['TaiKhoanId' => ['nullable'], 'LoaiBaoCao' => ['required', 'string'], 'Thang' => ['nullable','integer'], 'Nam' => ['required','integer'], 'TongThu' => ['nullable','numeric'], 'TongChi' => ['nullable','numeric'], 'TienThueThu' => ['nullable','numeric'], 'TienDatCocThu' => ['nullable','numeric'], 'ChiPhiVanHanh' => ['nullable','numeric']]);
+
+        $m->update($data);
+
+        return $m;
+    }
+
+    public function destroy($id)
+    {
+        $m = BaoCaoTaiChinh::findOrFail($id);
+        $m->delete();
+
+        return response(null, 204);
+    }
 }

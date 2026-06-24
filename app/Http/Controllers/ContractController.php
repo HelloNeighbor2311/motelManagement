@@ -39,6 +39,10 @@ class ContractController extends Controller
             });
         }
 
+        if ($request->wantsJson()) {
+            return $query->orderBy('NgayBatDau', 'desc')->get();
+        }
+
         $contracts = $query->orderBy('NgayBatDau', 'desc')->paginate(15);
 
         return view('contracts.index', compact('contracts'));
@@ -59,9 +63,12 @@ class ContractController extends Controller
             'KhachHangId' => 'required|uuid|exists:KhachHang,Id',
             'NgayBatDau' => 'required|date',
             'NgayKetThuc' => 'required|date|after:NgayBatDau',
-            'GiaThue' => 'required|numeric|min:0',
+            'ToaNhaId' => 'nullable|uuid|exists:ToaNha,Id',
+            'GiaThue' => 'required_without:GiaThueThaoThuan|numeric|min:0',
+            'GiaThueThaoThuan' => 'required_without:GiaThue|numeric|min:0',
             'TienDatCoc' => 'required|numeric|min:0',
-            'TrangThai' => 'required|in:active,expired,cancelled,renewed',
+            'TrangThai' => 'required_without:TrangThaiHopDong|in:active,expired,cancelled,renewed,HieuLuc,HetHan,HuyBo,GiaHan',
+            'TrangThaiHopDong' => 'required_without:TrangThai|in:HieuLuc,HetHan,HuyBo,GiaHan,active,expired,cancelled,renewed',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
@@ -73,12 +80,24 @@ class ContractController extends Controller
                 'cancelled' => 'HuyBo',
                 'renewed' => 'GiaHan',
             ];
-            $validated['TrangThaiHopDong'] = $map[$validated['TrangThai']] ?? $validated['TrangThai'];
+            $status = $validated['TrangThaiHopDong'] ?? $validated['TrangThai'];
+            $validated['TrangThaiHopDong'] = $map[$status] ?? $status;
             unset($validated['TrangThai']);
+            $validated['GiaThueThaoThuan'] = $validated['GiaThueThaoThuan'] ?? $validated['GiaThue'];
+            unset($validated['GiaThue']);
 
-            HopDong::create($validated);
+            $model = HopDong::create($validated);
+
+            if ($request->wantsJson()) {
+                return response($model, 201);
+            }
+
             return redirect()->route('contracts.index')->with('success', 'Thêm hợp đồng thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -86,6 +105,10 @@ class ContractController extends Controller
     public function show($id)
     {
         $contract = HopDong::with(['canHo', 'khachHang'])->findOrFail($id);
+        if (request()->wantsJson()) {
+            return $contract;
+        }
+
         return view('contracts.show', compact('contract'));
     }
 
@@ -94,6 +117,11 @@ class ContractController extends Controller
         $contract = HopDong::findOrFail($id);
         $apartments = CanHo::orderBy('MaCanHo', 'asc')->get();
         $customers = KhachHang::orderBy('HoTen', 'asc')->get();
+        if (request()->wantsJson()) {
+            $contract->load(['canHo', 'khachHang']);
+            return $contract;
+        }
+
         return view('contracts.edit', compact('contract', 'apartments', 'customers'));
     }
 
@@ -107,9 +135,12 @@ class ContractController extends Controller
             'KhachHangId' => 'required|uuid|exists:KhachHang,Id',
             'NgayBatDau' => 'required|date',
             'NgayKetThuc' => 'required|date|after:NgayBatDau',
-            'GiaThue' => 'required|numeric|min:0',
+            'ToaNhaId' => 'nullable|uuid|exists:ToaNha,Id',
+            'GiaThue' => 'required_without:GiaThueThaoThuan|numeric|min:0',
+            'GiaThueThaoThuan' => 'required_without:GiaThue|numeric|min:0',
             'TienDatCoc' => 'required|numeric|min:0',
-            'TrangThai' => 'required|in:active,expired,cancelled,renewed',
+            'TrangThai' => 'required_without:TrangThaiHopDong|in:active,expired,cancelled,renewed,HieuLuc,HetHan,HuyBo,GiaHan',
+            'TrangThaiHopDong' => 'required_without:TrangThai|in:HieuLuc,HetHan,HuyBo,GiaHan,active,expired,cancelled,renewed',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
@@ -121,12 +152,24 @@ class ContractController extends Controller
                 'cancelled' => 'HuyBo',
                 'renewed' => 'GiaHan',
             ];
-            $validated['TrangThaiHopDong'] = $map[$validated['TrangThai']] ?? $validated['TrangThai'];
+            $status = $validated['TrangThaiHopDong'] ?? $validated['TrangThai'];
+            $validated['TrangThaiHopDong'] = $map[$status] ?? $status;
             unset($validated['TrangThai']);
+            $validated['GiaThueThaoThuan'] = $validated['GiaThueThaoThuan'] ?? $validated['GiaThue'];
+            unset($validated['GiaThue']);
 
             $contract->update($validated);
+
+            if ($request->wantsJson()) {
+                return $contract;
+            }
+
             return redirect()->route('contracts.show', $contract->Id)->with('success', 'Cập nhật hợp đồng thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -136,6 +179,13 @@ class ContractController extends Controller
         try {
             $contract = HopDong::findOrFail($id);
             $contract->delete();
+            if (request()->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Xóa hợp đồng thành công!'
+                ]);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Xóa hợp đồng thành công!'

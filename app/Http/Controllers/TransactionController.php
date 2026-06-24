@@ -12,36 +12,40 @@ class TransactionController extends Controller
         $query = ThuChi::query();
 
         if ($request->has('type') && $request->type != '') {
-            $query->where('LoaiThuChi', $request->type);
+            $query->where('LoaiGiaoDich', $request->type);
         }
 
         if ($request->has('month') && $request->month != '') {
             $month = $request->month;
-            $query->whereMonth('NgayThuChi', '=', substr($month, 5));
-            $query->whereYear('NgayThuChi', '=', substr($month, 0, 4));
+            $query->whereMonth('NgayGiaoDich', '=', substr($month, 5));
+            $query->whereYear('NgayGiaoDich', '=', substr($month, 0, 4));
         }
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('MaThuChi', 'like', "%$search%")
-                    ->orWhere('NoiDung', 'like', "%$search%");
+                $q->where('ThamChieu', 'like', "%$search%")
+                    ->orWhere('MoTa', 'like', "%$search%");
             });
         }
 
-        $transactions = $query->orderBy('NgayThuChi', 'desc')->paginate(20);
+        if ($request->wantsJson()) {
+            return $query->orderBy('NgayGiaoDich', 'desc')->get();
+        }
+
+        $transactions = $query->orderBy('NgayGiaoDich', 'desc')->paginate(20);
 
         // Calculate summary statistics
         $statistics = [
-            'totalIncome' => ThuChi::where('LoaiThuChi', 'Thu')->sum('SoTien'),
-            'totalExpense' => ThuChi::where('LoaiThuChi', 'Chi')->sum('SoTien'),
-            'monthIncome' => ThuChi::where('LoaiThuChi', 'Thu')
-                ->whereMonth('NgayThuChi', now()->month)
-                ->whereYear('NgayThuChi', now()->year)
+            'totalIncome' => ThuChi::where('LoaiGiaoDich', 'Thu')->sum('SoTien'),
+            'totalExpense' => ThuChi::where('LoaiGiaoDich', 'Chi')->sum('SoTien'),
+            'monthIncome' => ThuChi::where('LoaiGiaoDich', 'Thu')
+                ->whereMonth('NgayGiaoDich', now()->month)
+                ->whereYear('NgayGiaoDich', now()->year)
                 ->sum('SoTien'),
-            'monthExpense' => ThuChi::where('LoaiThuChi', 'Chi')
-                ->whereMonth('NgayThuChi', now()->month)
-                ->whereYear('NgayThuChi', now()->year)
+            'monthExpense' => ThuChi::where('LoaiGiaoDich', 'Chi')
+                ->whereMonth('NgayGiaoDich', now()->month)
+                ->whereYear('NgayGiaoDich', now()->year)
                 ->sum('SoTien'),
         ];
 
@@ -56,18 +60,35 @@ class TransactionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'MaThuChi' => 'required|string|max:50|unique:ThuChi,MaThuChi',
-            'LoaiThuChi' => 'required|in:Thu,Chi',
+            'HopDongId' => 'nullable|uuid|exists:HopDong,Id',
+            'HoaDonId' => 'nullable|uuid|exists:HoaDon,Id',
+            'TaiKhoanId' => 'nullable|uuid|exists:TaiKhoanNguoiDung,Id',
+            'LoaiGiaoDich' => 'required_without:LoaiThuChi|in:Thu,Chi',
+            'LoaiThuChi' => 'required_without:LoaiGiaoDich|in:Thu,Chi',
             'SoTien' => 'required|numeric|min:0',
-            'NgayThuChi' => 'required|date',
-            'NoiDung' => 'required|string|max:200',
-            'GhiChu' => 'nullable|string|max:500',
+            'NgayGiaoDich' => 'required_without:NgayThuChi|date',
+            'NgayThuChi' => 'required_without:NgayGiaoDich|date',
+            'Thang' => 'nullable|integer|min:1|max:12',
+            'Nam' => 'nullable|integer|min:2000',
+            'MoTa' => 'nullable|string|max:500',
+            'NoiDung' => 'nullable|string|max:500',
+            'ThamChieu' => 'nullable|string|max:100',
+            'MaThuChi' => 'nullable|string|max:100',
         ]);
 
         try {
-            ThuChi::create($validated);
+            $validated = $this->normalizeTransactionData($validated);
+            $transaction = ThuChi::create($validated);
+            if ($request->wantsJson()) {
+                return response($transaction, 201);
+            }
+
             return redirect()->route('transactions.index')->with('success', 'Thêm giao dịch thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -75,12 +96,20 @@ class TransactionController extends Controller
     public function show($id)
     {
         $transaction = ThuChi::findOrFail($id);
+        if (request()->wantsJson()) {
+            return $transaction;
+        }
+
         return view('transactions.show', compact('transaction'));
     }
 
     public function edit($id)
     {
         $transaction = ThuChi::findOrFail($id);
+        if (request()->wantsJson()) {
+            return $transaction;
+        }
+
         return view('transactions.edit', compact('transaction'));
     }
 
@@ -89,18 +118,35 @@ class TransactionController extends Controller
         $transaction = ThuChi::findOrFail($id);
 
         $validated = $request->validate([
-            'MaThuChi' => 'required|string|max:50|unique:ThuChi,MaThuChi,' . $id . ',Id',
-            'LoaiThuChi' => 'required|in:Thu,Chi',
+            'HopDongId' => 'nullable|uuid|exists:HopDong,Id',
+            'HoaDonId' => 'nullable|uuid|exists:HoaDon,Id',
+            'TaiKhoanId' => 'nullable|uuid|exists:TaiKhoanNguoiDung,Id',
+            'LoaiGiaoDich' => 'required_without:LoaiThuChi|in:Thu,Chi',
+            'LoaiThuChi' => 'required_without:LoaiGiaoDich|in:Thu,Chi',
             'SoTien' => 'required|numeric|min:0',
-            'NgayThuChi' => 'required|date',
-            'NoiDung' => 'required|string|max:200',
-            'GhiChu' => 'nullable|string|max:500',
+            'NgayGiaoDich' => 'required_without:NgayThuChi|date',
+            'NgayThuChi' => 'required_without:NgayGiaoDich|date',
+            'Thang' => 'nullable|integer|min:1|max:12',
+            'Nam' => 'nullable|integer|min:2000',
+            'MoTa' => 'nullable|string|max:500',
+            'NoiDung' => 'nullable|string|max:500',
+            'ThamChieu' => 'nullable|string|max:100',
+            'MaThuChi' => 'nullable|string|max:100',
         ]);
 
         try {
+            $validated = $this->normalizeTransactionData($validated);
             $transaction->update($validated);
+            if ($request->wantsJson()) {
+                return $transaction;
+            }
+
             return redirect()->route('transactions.show', $transaction->Id)->with('success', 'Cập nhật giao dịch thành công!');
         } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => $e->getMessage()], 500);
+            }
+
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
@@ -110,6 +156,10 @@ class TransactionController extends Controller
         try {
             $transaction = ThuChi::findOrFail($id);
             $transaction->delete();
+            if (request()->wantsJson()) {
+                return response(null, 204);
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Xóa giao dịch thành công!'
@@ -120,5 +170,19 @@ class TransactionController extends Controller
                 'message' => 'Có lỗi xảy ra: ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function normalizeTransactionData(array $data): array
+    {
+        $data['LoaiGiaoDich'] = $data['LoaiGiaoDich'] ?? $data['LoaiThuChi'];
+        $data['NgayGiaoDich'] = $data['NgayGiaoDich'] ?? $data['NgayThuChi'];
+        $data['MoTa'] = $data['MoTa'] ?? ($data['NoiDung'] ?? null);
+        $data['ThamChieu'] = $data['ThamChieu'] ?? ($data['MaThuChi'] ?? null);
+        $data['Thang'] = $data['Thang'] ?? date('n', strtotime($data['NgayGiaoDich']));
+        $data['Nam'] = $data['Nam'] ?? date('Y', strtotime($data['NgayGiaoDich']));
+
+        unset($data['LoaiThuChi'], $data['NgayThuChi'], $data['NoiDung'], $data['MaThuChi']);
+
+        return $data;
     }
 }
