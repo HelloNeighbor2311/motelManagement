@@ -191,16 +191,4 @@ class CustomerController extends Controller
             ], 500);
         }
     }
-
-    public function info($id = null)
-    {
-        if ($id) {
-            $customer = KhachHang::with('thongTinCaNhan')->findOrFail($id);
-            return view('customers.info', compact('customer'));
-        }
-
-        // No id provided — render the info page without a specific customer.
-        // The view can handle displaying the current user's info or a prompt to select a customer.
-        return view('customers.info');
-    }
 }

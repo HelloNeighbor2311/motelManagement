@@ -62,12 +62,6 @@
                         <span>Danh Sách KH</span>
                     </a>
                 </li>
-                <li>
-                    <a href="{{ route('customers.info') }}">
-                        <i class="fas fa-address-card"></i>
-                        <span>Thông Tin Cá Nhân</span>
-                    </a>
-                </li>
             </ul>
         </li>
 
