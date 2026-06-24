@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\KhachHang;
-use App\Models\ThongTinCaNhan;
+use App\Models\ThongTinKhachHang;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -38,17 +38,34 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'TenKhachHang' => 'required|string|max:100',
+            'TenKhachHang' => 'required|string|max:200',
             'SoDienThoai' => 'required|string|max:20|unique:KhachHang,SoDienThoai',
             'Email' => 'required|email|unique:KhachHang,Email',
             'DiaChi' => 'required|string|max:200',
-            'CCCD' => 'required|string|max:20|unique:KhachHang,CCCD',
+            'CCCD' => 'required|string|max:20|unique:KhachHang,SoCmndCccd',
             'LoaiKhach' => 'required|in:Nhan,Doanh',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
         try {
-            KhachHang::create($validated);
+            // Map incoming legacy form fields to actual DB columns
+            $khData = [
+                'HoTen' => $validated['TenKhachHang'],
+                'SoDienThoai' => $validated['SoDienThoai'],
+                'Email' => $validated['Email'],
+                'SoCmndCccd' => $validated['CCCD'],
+                'LoaiKhachHang' => $validated['LoaiKhach'] === 'Nhan' ? 'CaNhan' : 'DoanhNghiep',
+            ];
+
+            $customer = KhachHang::create($khData);
+
+            // Create related ThongTinKhachHang record for DiaChi/GhiChu
+            ThongTinKhachHang::create([
+                'KhachHangId' => $customer->Id,
+                'DiaChiThuongTru' => $validated['DiaChi'],
+                'GhiChu' => $validated['GhiChu'] ?? null,
+            ]);
+
             return redirect()->route('customers.index')->with('success', 'Thêm khách hàng thành công!');
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
@@ -72,17 +89,42 @@ class CustomerController extends Controller
         $customer = KhachHang::findOrFail($id);
 
         $validated = $request->validate([
-            'TenKhachHang' => 'required|string|max:100',
+            'TenKhachHang' => 'required|string|max:200',
             'SoDienThoai' => 'required|string|max:20|unique:KhachHang,SoDienThoai,' . $id . ',Id',
             'Email' => 'required|email|unique:KhachHang,Email,' . $id . ',Id',
             'DiaChi' => 'required|string|max:200',
-            'CCCD' => 'required|string|max:20|unique:KhachHang,CCCD,' . $id . ',Id',
+            'CCCD' => 'required|string|max:20|unique:KhachHang,SoCmndCccd,' . $id . ',Id',
             'LoaiKhach' => 'required|in:Nhan,Doanh',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
         try {
-            $customer->update($validated);
+            // Map to DB columns
+            $khData = [
+                'HoTen' => $validated['TenKhachHang'],
+                'SoDienThoai' => $validated['SoDienThoai'],
+                'Email' => $validated['Email'],
+                'SoCmndCccd' => $validated['CCCD'],
+                'LoaiKhachHang' => $validated['LoaiKhach'] === 'Nhan' ? 'CaNhan' : 'DoanhNghiep',
+            ];
+
+            $customer->update($khData);
+
+            // Update or create ThongTinKhachHang
+            $tt = $customer->thongTinCaNhan;
+            if ($tt) {
+                $tt->update([
+                    'DiaChiThuongTru' => $validated['DiaChi'],
+                    'GhiChu' => $validated['GhiChu'] ?? null,
+                ]);
+            } else {
+                ThongTinKhachHang::create([
+                    'KhachHangId' => $customer->Id,
+                    'DiaChiThuongTru' => $validated['DiaChi'],
+                    'GhiChu' => $validated['GhiChu'] ?? null,
+                ]);
+            }
+
             return redirect()->route('customers.show', $customer->Id)->with('success', 'Cập nhật khách hàng thành công!');
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
@@ -115,9 +157,15 @@ class CustomerController extends Controller
         }
     }
 
-    public function info($id)
+    public function info($id = null)
     {
-        $customer = KhachHang::with('thongTinCaNhan')->findOrFail($id);
-        return view('customers.info', compact('customer'));
+        if ($id) {
+            $customer = KhachHang::with('thongTinCaNhan')->findOrFail($id);
+            return view('customers.info', compact('customer'));
+        }
+
+        // No id provided — render the info page without a specific customer.
+        // The view can handle displaying the current user's info or a prompt to select a customer.
+        return view('customers.info');
     }
 }

@@ -31,7 +31,7 @@
                 <div style="padding: 16px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Chưa Thanh Toán</p>
                     <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
-                        {{ \App\Models\HoaDon::where('TrangThai', 'Chua')->count() }}
+                        {{ \App\Models\HoaDon::where('TrangThaiThanhToan', 'ChuaThanhToan')->count() }}
                     </p>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                 <div style="padding: 16px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Quá Hạn</p>
                     <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
-                        {{ \App\Models\HoaDon::where('TrangThai', 'QuaHan')->count() }}
+                        {{ \App\Models\HoaDon::where('TrangThaiThanhToan', 'QuaHan')->count() }}
                     </p>
                 </div>
             </div>
@@ -47,7 +47,7 @@
                 <div style="padding: 16px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Đã Thanh Toán</p>
                     <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700;">
-                        {{ \App\Models\HoaDon::where('TrangThai', 'DaThanhToan')->count() }}
+                        {{ \App\Models\HoaDon::where('TrangThaiThanhToan', 'DaThanhToan')->count() }}
                     </p>
                 </div>
             </div>
@@ -55,7 +55,7 @@
                 <div style="padding: 16px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); border-radius: 8px; color: white; text-align: center;">
                     <p style="margin: 0; font-size: 12px; text-transform: uppercase; opacity: 0.9;">Tổng Doanh Thu</p>
                     <p style="margin: 8px 0 0 0; font-size: 18px; font-weight: 700;">
-                        {{ number_format(\App\Models\HoaDon::sum('TongTien'), 0, ',', '.') }} đ
+                        {{ number_format(\App\Models\HoaDon::sum('SoTien'), 0, ',', '.') }} đ
                     </p>
                 </div>
             </div>
@@ -69,7 +69,7 @@
             <div class="col-md-4">
                 <select id="statusFilter" class="form-select" onchange="applyFilters()">
                     <option value="">-- Tất Cả Trạng Thái --</option>
-                    <option value="Chua" {{ request('status') == 'Chua' ? 'selected' : '' }}>⏳ Chưa Thanh Toán</option>
+                    <option value="ChuaThanhToan" {{ request('status') == 'ChuaThanhToan' ? 'selected' : '' }}>⏳ Chưa Thanh Toán</option>
                     <option value="DaThanhToan" {{ request('status') == 'DaThanhToan' ? 'selected' : '' }}>✅ Đã Thanh Toán</option>
                     <option value="QuaHan" {{ request('status') == 'QuaHan' ? 'selected' : '' }}>❌ Quá Hạn</option>
                 </select>
@@ -104,13 +104,13 @@
                     <tr>
                         <td><strong>{{ $invoice->MaHoaDon }}</strong></td>
                         <td>{{ $invoice->khachHang->TenKhachHang ?? 'N/A' }}</td>
-                        <td>{{ $invoice->NgayLap ? \Carbon\Carbon::parse($invoice->NgayLap)->format('d/m/Y') : 'N/A' }}</td>
-                        <td>{{ $invoice->NgayDuKien ? \Carbon\Carbon::parse($invoice->NgayDuKien)->format('d/m/Y') : 'N/A' }}</td>
-                        <td style="text-align: right; font-weight: 600;">{{ number_format($invoice->TongTien, 0, ',', '.') }} đ</td>
+                        <td>{{ $invoice->NgayPhatHanh ? \Carbon\Carbon::parse($invoice->NgayPhatHanh)->format('d/m/Y') : 'N/A' }}</td>
+                        <td>{{ $invoice->NgayDenHan ? \Carbon\Carbon::parse($invoice->NgayDenHan)->format('d/m/Y') : 'N/A' }}</td>
+                        <td style="text-align: right; font-weight: 600;">{{ number_format($invoice->SoTien, 0, ',', '.') }} đ</td>
                         <td>
-                            @if ($invoice->TrangThai == 'Chua')
+                            @if ($invoice->TrangThaiThanhToan == 'ChuaThanhToan')
                                 <span class="badge bg-warning" style="color: #333;">⏳ Chưa Thanh Toán</span>
-                            @elseif ($invoice->TrangThai == 'DaThanhToan')
+                            @elseif ($invoice->TrangThaiThanhToan == 'DaThanhToan')
                                 <span class="badge bg-success">✅ Đã Thanh Toán</span>
                             @else
                                 <span class="badge bg-danger">❌ Quá Hạn</span>

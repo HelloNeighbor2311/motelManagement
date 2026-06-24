@@ -46,13 +46,13 @@
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Trạng Thái <span class="text-danger">*</span></label>
-                        <select name="TrangThai" class="form-select @error('TrangThai') is-invalid @enderror" required>
+                        <select name="TrangThaiThanhToan" class="form-select @error('TrangThaiThanhToan') is-invalid @enderror" required>
                             <option value="">-- Chọn Trạng Thái --</option>
-                            <option value="Chua" {{ old('TrangThai', 'Chua') == 'Chua' ? 'selected' : '' }}>⏳ Chưa Thanh Toán</option>
-                            <option value="DaThanhToan" {{ old('TrangThai') == 'DaThanhToan' ? 'selected' : '' }}>✅ Đã Thanh Toán</option>
-                            <option value="QuaHan" {{ old('TrangThai') == 'QuaHan' ? 'selected' : '' }}>❌ Quá Hạn</option>
+                            <option value="ChuaThanhToan" {{ old('TrangThaiThanhToan', 'ChuaThanhToan') == 'ChuaThanhToan' ? 'selected' : '' }}>⏳ Chưa Thanh Toán</option>
+                            <option value="DaThanhToan" {{ old('TrangThaiThanhToan') == 'DaThanhToan' ? 'selected' : '' }}>✅ Đã Thanh Toán</option>
+                            <option value="QuaHan" {{ old('TrangThaiThanhToan') == 'QuaHan' ? 'selected' : '' }}>❌ Quá Hạn</option>
                         </select>
-                        @error('TrangThai')
+                        @error('TrangThaiThanhToan')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
@@ -93,16 +93,16 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Ngày Lập <span class="text-danger">*</span></label>
-                        <input type="date" name="NgayLap" class="form-control @error('NgayLap') is-invalid @enderror" value="{{ old('NgayLap', now()->format('Y-m-d')) }}" required>
-                        @error('NgayLap')
+                        <input type="date" name="NgayPhatHanh" class="form-control @error('NgayPhatHanh') is-invalid @enderror" value="{{ old('NgayPhatHanh', now()->format('Y-m-d')) }}" required>
+                        @error('NgayPhatHanh')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
 
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Ngày Dự Kiến <span class="text-danger">*</span></label>
-                        <input type="date" name="NgayDuKien" class="form-control @error('NgayDuKien') is-invalid @enderror" value="{{ old('NgayDuKien', now()->addMonth()->format('Y-m-d')) }}" required>
-                        @error('NgayDuKien')
+                        <input type="date" name="NgayDenHan" class="form-control @error('NgayDenHan') is-invalid @enderror" value="{{ old('NgayDenHan', now()->addMonth()->format('Y-m-d')) }}" required>
+                        @error('NgayDenHan')
                             <div class="invalid-feedback d-block">{{ $message }}</div>
                         @enderror
                     </div>
@@ -110,8 +110,8 @@
 
                 <div class="mb-3">
                     <label class="form-label">Số Tiền (đ) <span class="text-danger">*</span></label>
-                    <input type="number" name="TongTien" class="form-control @error('TongTien') is-invalid @enderror" placeholder="VD: 3000000" value="{{ old('TongTien') }}" step="1000" min="0" required>
-                    @error('TongTien')
+                    <input type="number" name="SoTien" class="form-control @error('SoTien') is-invalid @enderror" placeholder="VD: 3000000" value="{{ old('SoTien') }}" step="1000" min="0" required>
+                    @error('SoTien')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>

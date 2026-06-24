@@ -193,10 +193,10 @@
                                 @foreach ($customer->hoaDons()->latest()->take(5)->get() as $invoice)
                                     <tr>
                                         <td><strong>{{ $invoice->MaHoaDon ?? 'N/A' }}</strong></td>
-                                        <td style="text-align: center;">{{ $invoice->NgayLap ? \Carbon\Carbon::parse($invoice->NgayLap)->format('d/m/Y') : 'N/A' }}</td>
-                                        <td style="text-align: right; font-weight: 600;">{{ number_format($invoice->TongTien ?? 0, 0, ',', '.') }} đ</td>
+                                        <td style="text-align: center;">{{ $invoice->NgayPhatHanh ? \Carbon\Carbon::parse($invoice->NgayPhatHanh)->format('d/m/Y') : 'N/A' }}</td>
+                                        <td style="text-align: right; font-weight: 600;">{{ number_format($invoice->SoTien ?? 0, 0, ',', '.') }} đ</td>
                                         <td>
-                                            <span class="badge bg-secondary">{{ $invoice->TrangThai ?? 'N/A' }}</span>
+                                            <span class="badge bg-secondary">{{ $invoice->TrangThaiThanhToan ?? 'N/A' }}</span>
                                         </td>
                                     </tr>
                                 @endforeach

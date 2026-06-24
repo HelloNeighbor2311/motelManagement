@@ -24,6 +24,28 @@ class KhachHang extends Model
         'CreatedAt',
     ];
 
+    // Attribute accessors to keep compatibility with views/controllers
+    public function getTenKhachHangAttribute()
+    {
+        return $this->HoTen;
+    }
+
+    public function getCCCDAttribute()
+    {
+        return $this->SoCmndCccd;
+    }
+
+    public function getLoaiKhachAttribute()
+    {
+        // Map stored values to legacy short values if needed
+        $map = [
+            'CaNhan' => 'Nhan',
+            'DoanhNghiep' => 'Doanh',
+            'NuocNgoai' => 'NuocNgoai',
+        ];
+        return $map[$this->LoaiKhachHang] ?? $this->LoaiKhachHang;
+    }
+
     protected static function boot()
     {
         parent::boot();

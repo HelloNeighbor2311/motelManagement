@@ -14,7 +14,7 @@ class InvoiceController extends Controller
         $query = HoaDon::with(['khachHang', 'hopDong']);
 
         if ($request->has('status') && $request->status != '') {
-            $query->where('TrangThai', $request->status);
+            $query->where('TrangThaiThanhToan', $request->status);
         }
 
         if ($request->has('search') && $request->search != '') {
@@ -27,7 +27,7 @@ class InvoiceController extends Controller
             });
         }
 
-        $invoices = $query->orderBy('NgayLap', 'desc')->paginate(15);
+        $invoices = $query->orderBy('NgayPhatHanh', 'desc')->paginate(15);
 
         return view('invoices.index', compact('invoices'));
     }
@@ -35,7 +35,7 @@ class InvoiceController extends Controller
     public function create()
     {
         $customers = KhachHang::orderBy('TenKhachHang', 'asc')->get();
-        $contracts = HopDong::where('TrangThai', 'active')->with('canHo')->get();
+        $contracts = HopDong::where('TrangThaiHopDong', 'HieuLuc')->with('canHo')->get();
         return view('invoices.create', compact('customers', 'contracts'));
     }
 
@@ -45,11 +45,11 @@ class InvoiceController extends Controller
             'MaHoaDon' => 'required|string|max:50|unique:HoaDon,MaHoaDon',
             'KhachHangId' => 'required|uuid|exists:KhachHang,Id',
             'HopDongId' => 'nullable|uuid|exists:HopDong,Id',
-            'NgayLap' => 'required|date',
-            'NgayDuKien' => 'required|date|after_or_equal:NgayLap',
-            'TongTien' => 'required|numeric|min:0',
+            'NgayPhatHanh' => 'required|date',
+            'NgayDenHan' => 'required|date|after_or_equal:NgayPhatHanh',
+            'SoTien' => 'required|numeric|min:0',
             'GhiChu' => 'nullable|string|max:500',
-            'TrangThai' => 'required|in:Chua,DaThanhToan,QuaHan',
+            'TrangThaiThanhToan' => 'required|in:ChuaThanhToan,DaThanhToan,QuaHan',
         ]);
 
         try {
@@ -82,11 +82,11 @@ class InvoiceController extends Controller
             'MaHoaDon' => 'required|string|max:50|unique:HoaDon,MaHoaDon,' . $id . ',Id',
             'KhachHangId' => 'required|uuid|exists:KhachHang,Id',
             'HopDongId' => 'nullable|uuid|exists:HopDong,Id',
-            'NgayLap' => 'required|date',
-            'NgayDuKien' => 'required|date|after_or_equal:NgayLap',
-            'TongTien' => 'required|numeric|min:0',
+            'NgayPhatHanh' => 'required|date',
+            'NgayDenHan' => 'required|date|after_or_equal:NgayPhatHanh',
+            'SoTien' => 'required|numeric|min:0',
             'GhiChu' => 'nullable|string|max:500',
-            'TrangThai' => 'required|in:Chua,DaThanhToan,QuaHan',
+            'TrangThaiThanhToan' => 'required|in:ChuaThanhToan,DaThanhToan,QuaHan',
         ]);
 
         try {
@@ -118,7 +118,7 @@ class InvoiceController extends Controller
     {
         try {
             $invoice = HoaDon::findOrFail($id);
-            $invoice->update(['TrangThai' => 'DaThanhToan']);
+            $invoice->update(['TrangThaiThanhToan' => 'DaThanhToan', 'NgayThanhToan' => now()]);
             return response()->json([
                 'success' => true,
                 'message' => 'Đánh dấu hóa đơn là đã thanh toán!'

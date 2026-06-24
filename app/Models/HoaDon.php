@@ -10,5 +10,9 @@ class HoaDon extends Model
     public $incrementing = false;
     protected $keyType = 'string';
     public $timestamps = false;
-    protected $fillable = ['HopDongId', 'KhachHangId', 'MaHoaDon', 'NgayPhatHanh', 'NgayDenHan', 'SoTien', 'LoaiHoaDon', 'Thang', 'Nam'];
+    protected $fillable = [
+        'HopDongId', 'KhachHangId', 'MaHoaDon', 'NgayPhatHanh', 'NgayDenHan', 'NgayThanhToan',
+        'SoTien', 'LoaiHoaDon', 'TrangThaiThanhToan', 'GhiChu', 'Thang', 'Nam'
+    ];
+
 }

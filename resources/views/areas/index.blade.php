@@ -117,11 +117,11 @@
             const row = document.querySelector(`tr[data-area-id="${areaId}"]`);
             const areaName = row.querySelector('td:nth-child(2)').textContent;
 
-            showConfirm(
+                    showConfirm(
                 'Xóa Khu Vực',
                 `Bạn có chắc chắn muốn xóa khu vực "${areaName}"?`,
                 () => {
-                    fetch(`{{ route('areas.destroy', '') }}/${areaId}`, {
+                    fetch(`{{ route('areas.index') }}/${areaId}`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

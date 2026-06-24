@@ -58,7 +58,7 @@ Route::group([], function () {
     // Khách Hàng (Customers)
     Route::prefix('customers')->group(function () {
         Route::get('/', [CustomerController::class, 'index'])->name('customers.index');
-        Route::get('/info', [CustomerController::class, 'info'])->name('customers.info');
+        Route::get('/info/{id?}', [CustomerController::class, 'info'])->name('customers.info');
         Route::get('/create', [CustomerController::class, 'create'])->name('customers.create');
         Route::post('/', [CustomerController::class, 'store'])->name('customers.store');
         Route::get('/{id}', [CustomerController::class, 'show'])->name('customers.show');

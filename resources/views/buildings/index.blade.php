@@ -128,7 +128,7 @@
                 'Xóa Tòa Nhà',
                 `Bạn có chắc chắn muốn xóa tòa nhà "${buildingName}"?`,
                 () => {
-                    fetch(`{{ route('buildings.destroy', '') }}/${buildingId}`, {
+                    fetch(`{{ url('buildings') }}/${buildingId}`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),

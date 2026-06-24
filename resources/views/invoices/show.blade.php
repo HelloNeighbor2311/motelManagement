@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="page-actions">
-        @if ($invoice->TrangThai == 'Chua')
+        @if ($invoice->TrangThaiThanhToan == 'ChuaThanhToan')
             <button type="button" class="btn btn-success" onclick="markAsPaid()">
                 <i class="fas fa-check"></i> Đánh Dấu Là Đã Thanh Toán
             </button>
@@ -35,12 +35,12 @@
                 <h6 class="mb-0 fw-bold">Trạng Thái Hóa Đơn</h6>
             </div>
             <div class="card-body" style="text-align: center;">
-                @if ($invoice->TrangThai == 'Chua')
+                @if ($invoice->TrangThaiThanhToan == 'ChuaThanhToan')
                     <div style="padding: 20px; background-color: #fff3cd; border-radius: 8px;">
                         <p style="font-size: 32px; margin: 0;">⏳</p>
                         <p style="margin: 8px 0 0 0; font-weight: 600; color: #856404;">Chưa Thanh Toán</p>
                     </div>
-                @elseif ($invoice->TrangThai == 'DaThanhToan')
+                @elseif ($invoice->TrangThaiThanhToan == 'DaThanhToan')
                     <div style="padding: 20px; background-color: #d4edda; border-radius: 8px;">
                         <p style="font-size: 32px; margin: 0;">✅</p>
                         <p style="margin: 8px 0 0 0; font-weight: 600; color: #155724;">Đã Thanh Toán</p>
@@ -62,11 +62,11 @@
             <div class="card-body">
                 <div style="margin-bottom: 12px;">
                     <label style="font-weight: 600; color: #6C757D; font-size: 11px; text-transform: uppercase;">Số Tiền</label>
-                    <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: #28a745;">{{ number_format($invoice->TongTien, 0, ',', '.') }} đ</p>
+                    <p style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: #28a745;">{{ number_format($invoice->SoTien, 0, ',', '.') }} đ</p>
                 </div>
                 <div style="padding-top: 12px; border-top: 1px solid #e0e0e0;">
                     <label style="font-weight: 600; color: #6C757D; font-size: 11px; text-transform: uppercase;">Ngày Dự Kiến</label>
-                    <p style="margin: 4px 0 0 0;">{{ $invoice->NgayDuKien ? \Carbon\Carbon::parse($invoice->NgayDuKien)->format('d/m/Y') : 'N/A' }}</p>
+                    <p style="margin: 4px 0 0 0;">{{ $invoice->NgayDenHan ? \Carbon\Carbon::parse($invoice->NgayDenHan)->format('d/m/Y') : 'N/A' }}</p>
                 </div>
             </div>
         </div>
@@ -124,7 +124,7 @@
                     </div>
                     <div class="col-md-6">
                         <label style="font-weight: 600; color: #6C757D; font-size: 11px; text-transform: uppercase;">Ngày Lập</label>
-                        <p style="margin: 4px 0 0 0;">{{ $invoice->NgayLap ? \Carbon\Carbon::parse($invoice->NgayLap)->format('d/m/Y') : 'N/A' }}</p>
+                        <p style="margin: 4px 0 0 0;">{{ $invoice->NgayPhatHanh ? \Carbon\Carbon::parse($invoice->NgayPhatHanh)->format('d/m/Y') : 'N/A' }}</p>
                     </div>
                 </div>
 
