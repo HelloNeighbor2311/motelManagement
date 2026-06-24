@@ -25,7 +25,7 @@ class ContractController extends Controller
                         $q2->where('MaCanHo', 'like', "%$search%");
                     })
                     ->orWhereHas('khachHang', function ($q3) use ($search) {
-                        $q3->where('TenKhachHang', 'like', "%$search%");
+                        $q3->where('HoTen', 'like', "%$search%");
                     });
             });
         }
@@ -38,7 +38,7 @@ class ContractController extends Controller
     public function create()
     {
         $apartments = CanHo::orderBy('MaCanHo', 'asc')->get();
-        $customers = KhachHang::orderBy('TenKhachHang', 'asc')->get();
+        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
         return view('contracts.create', compact('apartments', 'customers'));
     }
 
@@ -74,7 +74,7 @@ class ContractController extends Controller
     {
         $contract = HopDong::findOrFail($id);
         $apartments = CanHo::orderBy('MaCanHo', 'asc')->get();
-        $customers = KhachHang::orderBy('TenKhachHang', 'asc')->get();
+        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
         return view('contracts.edit', compact('contract', 'apartments', 'customers'));
     }
 

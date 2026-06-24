@@ -15,17 +15,17 @@ class CustomerController extends Controller
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('TenKhachHang', 'like', "%$search%")
+                $q->where('HoTen', 'like', "%$search%")
                     ->orWhere('SoDienThoai', 'like', "%$search%")
                     ->orWhere('Email', 'like', "%$search%");
             });
         }
 
         if ($request->has('type') && $request->type != '') {
-            $query->where('LoaiKhach', $request->type);
+            $query->where('LoaiKhachHang', $request->type === 'Nhan' ? 'CaNhan' : ($request->type === 'Doanh' ? 'DoanhNghiep' : $request->type));
         }
 
-        $customers = $query->orderBy('TenKhachHang', 'asc')->paginate(15);
+        $customers = $query->orderBy('HoTen', 'asc')->paginate(15);
 
         return view('customers.index', compact('customers'));
     }
@@ -42,7 +42,7 @@ class CustomerController extends Controller
             'SoDienThoai' => 'required|string|max:20|unique:KhachHang,SoDienThoai',
             'Email' => 'required|email|unique:KhachHang,Email',
             'DiaChi' => 'required|string|max:200',
-            'CCCD' => 'required|string|max:20|unique:KhachHang,SoCmndCccd',
+            'CCCD' => 'required|string|max:50',
             'LoaiKhach' => 'required|in:Nhan,Doanh',
             'GhiChu' => 'nullable|string|max:500',
         ]);
@@ -53,15 +53,21 @@ class CustomerController extends Controller
                 'HoTen' => $validated['TenKhachHang'],
                 'SoDienThoai' => $validated['SoDienThoai'],
                 'Email' => $validated['Email'],
-                'SoCmndCccd' => $validated['CCCD'],
                 'LoaiKhachHang' => $validated['LoaiKhach'] === 'Nhan' ? 'CaNhan' : 'DoanhNghiep',
             ];
 
+
+            // Ensure CCCD is unique across ThongTinKhachHang
+            if (ThongTinKhachHang::where('SoGiayTo', $validated['CCCD'])->exists()) {
+                return back()->withInput()->withErrors(['CCCD' => 'CCCD/MST đã tồn tại trong hệ thống.']);
+            }
+
             $customer = KhachHang::create($khData);
 
-            // Create related ThongTinKhachHang record for DiaChi/GhiChu
+            // Create related ThongTinKhachHang record for SoGiayTo/DiaChi/GhiChu
             ThongTinKhachHang::create([
                 'KhachHangId' => $customer->Id,
+                'SoGiayTo' => $validated['CCCD'],
                 'DiaChiThuongTru' => $validated['DiaChi'],
                 'GhiChu' => $validated['GhiChu'] ?? null,
             ]);
@@ -93,33 +99,40 @@ class CustomerController extends Controller
             'SoDienThoai' => 'required|string|max:20|unique:KhachHang,SoDienThoai,' . $id . ',Id',
             'Email' => 'required|email|unique:KhachHang,Email,' . $id . ',Id',
             'DiaChi' => 'required|string|max:200',
-            'CCCD' => 'required|string|max:20|unique:KhachHang,SoCmndCccd,' . $id . ',Id',
+            'CCCD' => 'required|string|max:50',
             'LoaiKhach' => 'required|in:Nhan,Doanh',
             'GhiChu' => 'nullable|string|max:500',
         ]);
 
         try {
             // Map to DB columns
+
             $khData = [
                 'HoTen' => $validated['TenKhachHang'],
                 'SoDienThoai' => $validated['SoDienThoai'],
                 'Email' => $validated['Email'],
-                'SoCmndCccd' => $validated['CCCD'],
                 'LoaiKhachHang' => $validated['LoaiKhach'] === 'Nhan' ? 'CaNhan' : 'DoanhNghiep',
             ];
 
             $customer->update($khData);
 
-            // Update or create ThongTinKhachHang
+            // Ensure CCCD uniqueness (not used as a column on KhachHang)
+            if (ThongTinKhachHang::where('SoGiayTo', $validated['CCCD'])->where('KhachHangId', '<>', $id)->exists()) {
+                return back()->withInput()->withErrors(['CCCD' => 'CCCD/MST đã tồn tại trong hệ thống.']);
+            }
+
+            // Update or create ThongTinKhachHang with SoGiayTo
             $tt = $customer->thongTinCaNhan;
             if ($tt) {
                 $tt->update([
+                    'SoGiayTo' => $validated['CCCD'],
                     'DiaChiThuongTru' => $validated['DiaChi'],
                     'GhiChu' => $validated['GhiChu'] ?? null,
                 ]);
             } else {
                 ThongTinKhachHang::create([
                     'KhachHangId' => $customer->Id,
+                    'SoGiayTo' => $validated['CCCD'],
                     'DiaChiThuongTru' => $validated['DiaChi'],
                     'GhiChu' => $validated['GhiChu'] ?? null,
                 ]);

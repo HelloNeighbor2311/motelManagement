@@ -17,7 +17,6 @@ class KhachHang extends Model
         'Id',
         'HoTen',
         'LoaiKhachHang',
-        'SoCmndCccd',
         'QuocTich',
         'SoDienThoai',
         'Email',
@@ -32,7 +31,7 @@ class KhachHang extends Model
 
     public function getCCCDAttribute()
     {
-        return $this->SoCmndCccd;
+        return $this->thongTinCaNhan->SoGiayTo ?? null;
     }
 
     public function getLoaiKhachAttribute()

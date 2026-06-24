@@ -22,7 +22,7 @@ class InvoiceController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('MaHoaDon', 'like', "%$search%")
                     ->orWhereHas('khachHang', function ($q2) use ($search) {
-                        $q2->where('TenKhachHang', 'like', "%$search%");
+                        $q2->where('HoTen', 'like', "%$search%");
                     });
             });
         }
@@ -34,7 +34,7 @@ class InvoiceController extends Controller
 
     public function create()
     {
-        $customers = KhachHang::orderBy('TenKhachHang', 'asc')->get();
+        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
         $contracts = HopDong::where('TrangThaiHopDong', 'HieuLuc')->with('canHo')->get();
         return view('invoices.create', compact('customers', 'contracts'));
     }
@@ -69,7 +69,7 @@ class InvoiceController extends Controller
     public function edit($id)
     {
         $invoice = HoaDon::findOrFail($id);
-        $customers = KhachHang::orderBy('TenKhachHang', 'asc')->get();
+        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
         $contracts = HopDong::with('canHo')->get();
         return view('invoices.edit', compact('invoice', 'customers', 'contracts'));
     }
