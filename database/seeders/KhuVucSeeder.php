@@ -13,6 +13,8 @@ class KhuVucSeeder extends Seeder
      */
     public function run(): void
     {
+        $ownerId = \Illuminate\Support\Facades\DB::table('users')->orderBy('id')->value('id');
+
         $items = [
             [
                 'TenKhuVuc' => 'Quận 1',
@@ -62,6 +64,7 @@ class KhuVucSeeder extends Seeder
                 'TenKhuVuc' => $item['TenKhuVuc'],
                 'DiaChi' => $item['DiaChi'],
                 'MoTa' => $item['MoTa'],
+                'user_id' => $ownerId,
             ]);
         }
     }

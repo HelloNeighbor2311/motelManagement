@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\OwnedByUser;
 
 class ToaNha extends Model
 {
+    use OwnedByUser;
     protected $table = 'ToaNha';
     protected $primaryKey = 'Id';
     protected $keyType = 'string';
@@ -15,6 +17,7 @@ class ToaNha extends Model
 
     protected $fillable = [
         'Id',
+        'user_id',
         'KhuVucId',
         'TenToaNha',
         'SoTang',

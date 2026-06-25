@@ -14,10 +14,16 @@ use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [App\Http\Controllers\UserController::class, 'showLogin'])->name('login');
-    Route::post('/login', [App\Http\Controllers\UserController::class, 'login'])->name('login.perform');
-    Route::get('/register', [App\Http\Controllers\UserController::class, 'showRegister'])->name('register');
-    Route::post('/register', [App\Http\Controllers\UserController::class, 'register'])->name('register.perform');
+    Route::get('/login', [UserController::class, 'showLogin'])->name('login');
+    Route::post('/login', [UserController::class, 'login'])->name('login.perform');
+    Route::get('/register', [UserController::class, 'showRegister'])->name('register');
+    Route::post('/register', [UserController::class, 'register'])->name('register.perform');
+    
+    // Password Reset
+    Route::get('/forgot-password', [UserController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [UserController::class, 'sendPasswordResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [UserController::class, 'showResetPasswordForm'])->name('password.reset');
+    Route::post('/reset-password', [UserController::class, 'resetPassword'])->name('password.update');
 });
 
 // Welcome Page

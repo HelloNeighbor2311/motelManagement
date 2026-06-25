@@ -11,7 +11,7 @@ class ContractController extends Controller
 {
     public function index(Request $request)
     {
-        $query = HopDong::with(['canHo', 'khachHang']);
+        $query = HopDong::forCurrentUser()->with(['canHo', 'khachHang']);
 
         if ($request->has('status') && $request->status != '') {
             // Translate possible legacy/frontend statuses to DB values
@@ -50,8 +50,8 @@ class ContractController extends Controller
 
     public function create()
     {
-        $apartments = CanHo::orderBy('MaCanHo', 'asc')->get();
-        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
+        $apartments = CanHo::forCurrentUser()->orderBy('MaCanHo', 'asc')->get();
+        $customers = KhachHang::forCurrentUser()->orderBy('HoTen', 'asc')->get();
         return view('contracts.create', compact('apartments', 'customers'));
     }
 
@@ -73,6 +73,7 @@ class ContractController extends Controller
         ]);
 
         try {
+            $validated['user_id'] = auth()->id();
             // Map incoming `TrangThai` form field to DB column `TrangThaiHopDong`
             $map = [
                 'active' => 'HieuLuc',
@@ -104,7 +105,7 @@ class ContractController extends Controller
 
     public function show($id)
     {
-        $contract = HopDong::with(['canHo', 'khachHang'])->findOrFail($id);
+        $contract = HopDong::forCurrentUser()->with(['canHo', 'khachHang'])->findOrFail($id);
         if (request()->wantsJson()) {
             return $contract;
         }
@@ -114,9 +115,9 @@ class ContractController extends Controller
 
     public function edit($id)
     {
-        $contract = HopDong::findOrFail($id);
-        $apartments = CanHo::orderBy('MaCanHo', 'asc')->get();
-        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
+        $contract = HopDong::forCurrentUser()->findOrFail($id);
+        $apartments = CanHo::forCurrentUser()->orderBy('MaCanHo', 'asc')->get();
+        $customers = KhachHang::forCurrentUser()->orderBy('HoTen', 'asc')->get();
         if (request()->wantsJson()) {
             $contract->load(['canHo', 'khachHang']);
             return $contract;
@@ -127,7 +128,7 @@ class ContractController extends Controller
 
     public function update(Request $request, $id)
     {
-        $contract = HopDong::findOrFail($id);
+        $contract = HopDong::forCurrentUser()->findOrFail($id);
 
         $validated = $request->validate([
             'MaHopDong' => 'required|string|max:50|unique:HopDong,MaHopDong,' . $id . ',Id',
@@ -177,7 +178,7 @@ class ContractController extends Controller
     public function destroy($id)
     {
         try {
-            $contract = HopDong::findOrFail($id);
+            $contract = HopDong::forCurrentUser()->findOrFail($id);
             $contract->delete();
             if (request()->wantsJson()) {
                 return response()->json([

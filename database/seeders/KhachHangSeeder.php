@@ -13,6 +13,7 @@ class KhachHangSeeder extends Seeder
      */
     public function run(): void
     {
+        $ownerId = \Illuminate\Support\Facades\DB::table('users')->orderBy('id')->value('id');
         $items = [
             ['HoTen' => 'Nguyễn Văn A', 'LoaiKhachHang' => 'CaNhan', 'QuocTich' => 'VN', 'SoDienThoai' => '0909000001', 'Email' => 'a@example.com'],
             ['HoTen' => 'Công ty B', 'LoaiKhachHang' => 'DoanhNghiep', 'QuocTich' => 'VN', 'SoDienThoai' => '0909000002', 'Email' => 'b@company.com'],
@@ -32,6 +33,7 @@ class KhachHangSeeder extends Seeder
                 'LoaiKhachHang' => $item['LoaiKhachHang'],
                 'SoDienThoai' => $item['SoDienThoai'],
                 'Email' => $item['Email'],
+                'user_id' => $ownerId,
             ]);
 
             // Insert into ThongTinKhachHang for extra details like QuocTich

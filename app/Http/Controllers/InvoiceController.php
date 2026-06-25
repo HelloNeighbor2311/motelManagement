@@ -11,7 +11,7 @@ class InvoiceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = HoaDon::with(['khachHang', 'hopDong']);
+        $query = HoaDon::forCurrentUser()->with(['khachHang', 'hopDong']);
 
         if ($request->has('status') && $request->status != '') {
             $query->where('TrangThaiThanhToan', $request->status);
@@ -38,8 +38,8 @@ class InvoiceController extends Controller
 
     public function create()
     {
-        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
-        $contracts = HopDong::where('TrangThaiHopDong', 'HieuLuc')->with('canHo')->get();
+        $customers = KhachHang::forCurrentUser()->orderBy('HoTen', 'asc')->get();
+        $contracts = HopDong::forCurrentUser()->where('TrangThaiHopDong', 'HieuLuc')->with('canHo')->get();
         return view('invoices.create', compact('customers', 'contracts'));
     }
 
@@ -60,6 +60,7 @@ class InvoiceController extends Controller
         ]);
 
         try {
+            $validated['user_id'] = auth()->id();
             $validated['TrangThaiThanhToan'] = $validated['TrangThaiThanhToan'] ?? 'ChuaThanhToan';
             $validated['Thang'] = $validated['Thang'] ?? date('n', strtotime($validated['NgayPhatHanh']));
             $validated['Nam'] = $validated['Nam'] ?? date('Y', strtotime($validated['NgayPhatHanh']));
@@ -82,7 +83,7 @@ class InvoiceController extends Controller
 
     public function show($id)
     {
-        $invoice = HoaDon::with(['khachHang', 'hopDong'])->findOrFail($id);
+        $invoice = HoaDon::forCurrentUser()->with(['khachHang', 'hopDong'])->findOrFail($id);
         if (request()->wantsJson()) {
             return $invoice;
         }
@@ -92,9 +93,9 @@ class InvoiceController extends Controller
 
     public function edit($id)
     {
-        $invoice = HoaDon::findOrFail($id);
-        $customers = KhachHang::orderBy('HoTen', 'asc')->get();
-        $contracts = HopDong::with('canHo')->get();
+        $invoice = HoaDon::forCurrentUser()->findOrFail($id);
+        $customers = KhachHang::forCurrentUser()->orderBy('HoTen', 'asc')->get();
+        $contracts = HopDong::forCurrentUser()->with('canHo')->get();
         if (request()->wantsJson()) {
             $invoice->load(['khachHang', 'hopDong']);
             return $invoice;
@@ -105,7 +106,7 @@ class InvoiceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $invoice = HoaDon::findOrFail($id);
+        $invoice = HoaDon::forCurrentUser()->findOrFail($id);
 
         $validated = $request->validate([
             'MaHoaDon' => 'required|string|max:50|unique:HoaDon,MaHoaDon,' . $id . ',Id',
@@ -145,7 +146,7 @@ class InvoiceController extends Controller
     public function destroy($id)
     {
         try {
-            $invoice = HoaDon::findOrFail($id);
+            $invoice = HoaDon::forCurrentUser()->findOrFail($id);
             $invoice->delete();
             if (request()->wantsJson()) {
                 return response(null, 204);
@@ -166,7 +167,7 @@ class InvoiceController extends Controller
     public function markPaid($id)
     {
         try {
-            $invoice = HoaDon::findOrFail($id);
+            $invoice = HoaDon::forCurrentUser()->findOrFail($id);
             $invoice->update(['TrangThaiThanhToan' => 'DaThanhToan', 'NgayThanhToan' => now()]);
             return response()->json([
                 'success' => true,

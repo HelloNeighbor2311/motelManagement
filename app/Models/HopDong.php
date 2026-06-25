@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\OwnedByUser;
 
 class HopDong extends Model
 {
+    use OwnedByUser;
     protected $table = 'HopDong';
 
     protected $primaryKey = 'Id';
@@ -17,7 +19,7 @@ class HopDong extends Model
 
     public $timestamps = false;
 
-    protected $fillable = ['Id', 'KhachHangId', 'CanHoId', 'ToaNhaId', 'MaHopDong', 'NgayBatDau', 'NgayKetThuc', 'GiaThueThaoThuan', 'TienDatCoc', 'PhuongThucThanhToan', 'ChuKyThanhToan', 'TrangThaiHopDong', 'GhiChu', 'CreatedAt'];
+    protected $fillable = ['Id', 'user_id', 'KhachHangId', 'CanHoId', 'ToaNhaId', 'MaHopDong', 'NgayBatDau', 'NgayKetThuc', 'GiaThueThaoThuan', 'TienDatCoc', 'PhuongThucThanhToan', 'ChuKyThanhToan', 'TrangThaiHopDong', 'GhiChu', 'CreatedAt'];
 
     protected static function boot()
     {

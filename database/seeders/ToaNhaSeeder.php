@@ -13,6 +13,8 @@ class ToaNhaSeeder extends Seeder
      */
     public function run(): void
     {
+        $ownerId = \Illuminate\Support\Facades\DB::table('users')->orderBy('id')->value('id');
+
         $items = [
             ['TenToaNha' => 'Sakura Building', 'SoTang' => 10, 'MoTa' => 'Tòa nhà dịch vụ cao cấp, gần trung tâm', 'KhuVucName' => 'Quận 1'],
             ['TenToaNha' => 'Lotus Tower', 'SoTang' => 8, 'MoTa' => 'Tòa nhà tiện nghi, an ninh tốt', 'KhuVucName' => 'Quận 3'],
@@ -33,6 +35,7 @@ class ToaNhaSeeder extends Seeder
                 'TenToaNha' => $item['TenToaNha'],
                 'SoTang' => $item['SoTang'],
                 'MoTa' => $item['MoTa'],
+                'user_id' => $ownerId,
             ]);
         }
     }
