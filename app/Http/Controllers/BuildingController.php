@@ -11,7 +11,7 @@ class BuildingController extends Controller
     // List all buildings
     public function index(Request $request)
     {
-        $buildings = ToaNha::with('khuVuc')
+        $buildings = ToaNha::forCurrentUser()->with('khuVuc')
             ->withCount(['canHos as canHos_count'])
             ->when($request->filled('area'), function ($query) use ($request) {
                 $query->where('KhuVucId', $request->string('area')->toString());
@@ -31,7 +31,7 @@ class BuildingController extends Controller
         }
 
         $buildings = $buildings->get();
-        $areas = KhuVuc::orderBy('TenKhuVuc')->get();
+        $areas = KhuVuc::forCurrentUser()->orderBy('TenKhuVuc')->get();
 
         return view('buildings.index', compact('buildings', 'areas'));
     }
@@ -39,7 +39,7 @@ class BuildingController extends Controller
     // Show create form
     public function create()
     {
-        $areas = KhuVuc::all();
+        $areas = KhuVuc::forCurrentUser()->orderBy('TenKhuVuc')->get();
 
         return view('buildings.create', compact('areas'));
     }
@@ -55,6 +55,7 @@ class BuildingController extends Controller
         ]);
 
         try {
+            $validated['user_id'] = auth()->id();
             $building = ToaNha::create($validated);
 
             if ($request->wantsJson()) {
@@ -76,7 +77,7 @@ class BuildingController extends Controller
     // Show building details
     public function show($id)
     {
-        $building = ToaNha::with('khuVuc', 'canHos')->findOrFail($id);
+        $building = ToaNha::forCurrentUser()->with('khuVuc', 'canHos')->findOrFail($id);
 
         if (request()->wantsJson()) {
             return $building->loadCount('canHos');
@@ -88,8 +89,8 @@ class BuildingController extends Controller
     // Show edit form
     public function edit($id)
     {
-        $building = ToaNha::findOrFail($id);
-        $areas = KhuVuc::all();
+        $building = ToaNha::forCurrentUser()->findOrFail($id);
+        $areas = KhuVuc::forCurrentUser()->orderBy('TenKhuVuc')->get();
 
         return view('buildings.edit', compact('building', 'areas'));
     }
@@ -97,7 +98,7 @@ class BuildingController extends Controller
     // Update building
     public function update(Request $request, $id)
     {
-        $building = ToaNha::findOrFail($id);
+        $building = ToaNha::forCurrentUser()->findOrFail($id);
 
         $validated = $request->validate([
             'KhuVucId' => 'required|exists:KhuVuc,Id',
@@ -129,7 +130,7 @@ class BuildingController extends Controller
     public function destroy($id)
     {
         try {
-            $building = ToaNha::findOrFail($id);
+            $building = ToaNha::forCurrentUser()->findOrFail($id);
 
             // Check if building has apartments
             if ($building->canHos()->count() > 0) {

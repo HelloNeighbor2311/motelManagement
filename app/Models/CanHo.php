@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\OwnedByUser;
 
 class CanHo extends Model
 {
+    use OwnedByUser;
     protected $table = 'CanHo';
     protected $primaryKey = 'Id';
     protected $keyType = 'string';
@@ -15,6 +17,7 @@ class CanHo extends Model
 
     protected $fillable = [
         'Id',
+        'user_id',
         'ToaNhaId',
         'MaCanHo',
         'Tang',

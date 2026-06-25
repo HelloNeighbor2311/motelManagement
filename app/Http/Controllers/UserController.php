@@ -9,7 +9,9 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use App\Models\TaiKhoanNguoiDung;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Auth\Events\PasswordReset;
 
 class UserController extends Controller
 {
@@ -170,6 +172,86 @@ class UserController extends Controller
         Session::regenerateToken();
 
         return redirect()->route('login');
+    }
+
+    public function showForgotPasswordForm()
+    {
+        return view('auth.forgot-password');
+    }
+
+    public function sendPasswordResetLink(Request $request)
+    {
+        $data = $request->validate([
+            'username' => 'required|string',
+            'email' => 'required|email',
+            'phone' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $taiKhoan = TaiKhoanNguoiDung::where('TenDangNhap', $data['username'])
+            ->where('Email', $data['email'])
+            ->where('SoDienThoai', $data['phone'])
+            ->first();
+
+        if (! $taiKhoan) {
+            return back()
+                ->withErrors(['info' => 'Tên đăng nhập, email hoặc số điện thoại không đúng.'])
+                ->withInput();
+        }
+
+        $hashedPassword = Hash::make($data['password']);
+        $taiKhoan->MatKhauHash = $hashedPassword;
+        $taiKhoan->save();
+
+        $user = User::where('email', $data['email'])->first();
+        if ($user) {
+            $user->password = $hashedPassword;
+            $user->save();
+        } else {
+            User::create([
+                'name' => $taiKhoan->HoTen ?? $taiKhoan->TenDangNhap,
+                'email' => $data['email'],
+                'password' => $hashedPassword,
+            ]);
+        }
+
+        return redirect()->route('login')->with('status', 'Mật khẩu đã được đặt lại thành công.');
+    }
+
+    public function showResetPasswordForm($token)
+    {
+        return view('auth.reset-password', ['token' => $token]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required|email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ])->save();
+
+                // Also update TaiKhoanNguoiDung
+                $taiKhoan = TaiKhoanNguoiDung::where('Email', $user->email)->first();
+                if ($taiKhoan) {
+                    $taiKhoan->MatKhauHash = Hash::make($password);
+                    $taiKhoan->save();
+                }
+
+                event(new PasswordReset($user));
+            }
+        );
+
+        return $status === Password::PASSWORD_RESET
+            ? redirect()->route('login')->with('status', trans($status))
+            : back()->withErrors(['email' => trans($status)]);
     }
 
     // --- API methods for TaiKhoanNguoiDung (merged) ---

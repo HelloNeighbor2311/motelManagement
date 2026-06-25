@@ -19,7 +19,7 @@
             <input class="form-check-input" type="checkbox" name="remember">
             <span class="form-check-label">Ghi nhớ đăng nhập</span>
         </label>
-        <a href="#" class="auth-link">Quên mật khẩu?</a>
+        <a href="{{ route('password.request') }}" class="auth-link">Quên mật khẩu?</a>
     </div>
 
     <button type="submit" class="btn btn-primary btn-auth w-100">

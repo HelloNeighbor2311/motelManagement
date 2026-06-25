@@ -13,7 +13,7 @@ class CustomerController extends Controller
     public function index(Request $request)
     {
         // Eager-load personal info and contract count to avoid calling relations on non-model objects
-        $query = KhachHang::with('thongTinCaNhan')->withCount('hopDongs');
+        $query = KhachHang::forCurrentUser()->with('thongTinCaNhan')->withCount('hopDongs');
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -53,6 +53,7 @@ class CustomerController extends Controller
                 'QuocTich' => 'nullable|string|max:100',
             ]);
 
+            $validated['user_id'] = auth()->id();
             return response(KhachHang::create($validated), 201);
         }
 
@@ -88,6 +89,7 @@ class CustomerController extends Controller
                 return back()->withInput()->withErrors(['CCCD' => 'CCCD/MST đã tồn tại trong hệ thống.']);
             }
 
+            $khData['user_id'] = auth()->id();
             $customer = KhachHang::create($khData);
 
             // Create related ThongTinKhachHang record for SoGiayTo/DiaChi/GhiChu
@@ -116,7 +118,7 @@ class CustomerController extends Controller
 
     public function show($id)
     {
-        $customer = KhachHang::with('thongTinCaNhan', 'hopDongs', 'hoaDons')->findOrFail($id);
+        $customer = KhachHang::forCurrentUser()->with('thongTinCaNhan', 'hopDongs', 'hoaDons')->findOrFail($id);
 
         if (request()->wantsJson()) {
             return $customer;
@@ -127,13 +129,13 @@ class CustomerController extends Controller
 
     public function edit($id)
     {
-        $customer = KhachHang::findOrFail($id);
+        $customer = KhachHang::forCurrentUser()->findOrFail($id);
         return view('customers.edit', compact('customer'));
     }
 
     public function update(Request $request, $id)
     {
-        $customer = KhachHang::findOrFail($id);
+        $customer = KhachHang::forCurrentUser()->findOrFail($id);
 
         if ($request->wantsJson() && ! $request->has('TenKhachHang')) {
             $validated = $request->validate([
@@ -223,7 +225,7 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         try {
-            $customer = KhachHang::findOrFail($id);
+            $customer = KhachHang::forCurrentUser()->findOrFail($id);
 
             // Check if customer has active contracts.
             $hopDongTable = (new HopDong())->getTable();
@@ -278,7 +280,7 @@ class CustomerController extends Controller
         $q = $request->input('q', '');
         $type = $request->input('type', '');
 
-        $query = KhachHang::with('thongTinCaNhan');
+        $query = KhachHang::forCurrentUser()->with('thongTinCaNhan');
 
         if ($q !== '') {
             $query->where(function ($s) use ($q) {

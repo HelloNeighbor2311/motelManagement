@@ -12,7 +12,7 @@ class ApartmentController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CanHo::with('toaNha.khuVuc');
+        $query = CanHo::forCurrentUser()->with('toaNha.khuVuc');
 
         if ($request->filled('area')) {
             $areaId = $request->string('area')->toString();
@@ -44,15 +44,15 @@ class ApartmentController extends Controller
         }
 
         $apartments = $query->orderBy('ToaNhaId', 'asc')->orderBy('Tang', 'asc')->paginate(15);
-        $areas = KhuVuc::orderBy('TenKhuVuc', 'asc')->get();
-        $buildings = ToaNha::with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
+        $areas = KhuVuc::forCurrentUser()->orderBy('TenKhuVuc', 'asc')->get();
+        $buildings = ToaNha::forCurrentUser()->with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
 
         return view('apartments.index', compact('apartments', 'areas', 'buildings'));
     }
 
     public function create()
     {
-        $buildings = ToaNha::with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
+        $buildings = ToaNha::forCurrentUser()->with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
 
         return view('apartments.create', compact('buildings'));
     }
@@ -75,6 +75,7 @@ class ApartmentController extends Controller
         ]);
 
         try {
+            $validated['user_id'] = auth()->id();
             $model = CanHo::create($validated);
 
             if ($request->wantsJson()) {
@@ -93,7 +94,7 @@ class ApartmentController extends Controller
 
     public function show($id)
     {
-        $apartment = CanHo::with('toaNha.khuVuc', 'hopDongs.khachHang')->findOrFail($id);
+        $apartment = CanHo::forCurrentUser()->with('toaNha.khuVuc', 'hopDongs.khachHang')->findOrFail($id);
 
         if (request()->wantsJson()) {
             return $apartment;
@@ -104,15 +105,15 @@ class ApartmentController extends Controller
 
     public function edit($id)
     {
-        $apartment = CanHo::with('toaNha.khuVuc')->findOrFail($id);
-        $buildings = ToaNha::with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
+        $apartment = CanHo::forCurrentUser()->with('toaNha.khuVuc')->findOrFail($id);
+        $buildings = ToaNha::forCurrentUser()->with('khuVuc')->orderBy('TenToaNha', 'asc')->get();
 
         return view('apartments.edit', compact('apartment', 'buildings'));
     }
 
     public function update(Request $request, $id)
     {
-        $apartment = CanHo::findOrFail($id);
+        $apartment = CanHo::forCurrentUser()->findOrFail($id);
 
         $validated = $request->validate([
             'ToaNhaId' => 'required|uuid|exists:ToaNha,Id',
@@ -150,7 +151,7 @@ class ApartmentController extends Controller
     public function destroy($id)
     {
         try {
-            $apartment = CanHo::findOrFail($id);
+            $apartment = CanHo::forCurrentUser()->findOrFail($id);
 
             // Check if apartment has active contracts
             if ($apartment->hopDongs()->where('TrangThaiHopDong', 'HieuLuc')->exists()) {
@@ -183,14 +184,14 @@ class ApartmentController extends Controller
 
     public function floorPlan(Request $request)
     {
-        $buildings = ToaNha::with('khuVuc')->orderBy('TenToaNha')->get();
+        $buildings = ToaNha::forCurrentUser()->with('khuVuc')->orderBy('TenToaNha')->get();
         $building = $request->filled('building')
             ? $buildings->firstWhere('Id', $request->string('building')->toString())
             : $buildings->first();
 
         abort_if($request->filled('building') && ! $building, 404);
 
-        $apartments = $building ? CanHo::where('ToaNhaId', $building->Id)
+        $apartments = $building ? CanHo::forCurrentUser()->where('ToaNhaId', $building->Id)
             ->orderBy('Tang', 'asc')
             ->get()
             ->groupBy('Tang') : collect();
