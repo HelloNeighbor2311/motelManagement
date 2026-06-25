@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class DropQuyFromBaoCaoTaiChinh extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -21,7 +21,7 @@ class DropQuyFromBaoCaoTaiChinh extends Migration
                 });
             }
 
-            // Try to remove old check constraints and add new one without 'Quy'
+            // Try to remove old check constraints and add new one
             try {
                 DB::statement('ALTER TABLE BaoCaoTaiChinh DROP CONSTRAINT IF EXISTS CHK_BaoCaoTaiChinh_Quy');
             } catch (\Exception $e) {
@@ -69,4 +69,4 @@ class DropQuyFromBaoCaoTaiChinh extends Migration
             }
         }
     }
-}
+};

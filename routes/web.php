@@ -25,11 +25,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Dashboard (protected)
+// Dashboard
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Khu Vực (Areas)
+    //Areas
     Route::prefix('areas')->group(function () {
         Route::get('/', [AreaController::class, 'index'])->name('areas.index');
         Route::get('/create', [AreaController::class, 'create'])->name('areas.create');
@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [AreaController::class, 'destroy'])->name('areas.destroy');
     });
 
-    // Tòa Nhà (Buildings)
+    //Buildings
     Route::prefix('buildings')->group(function () {
         Route::get('/', [BuildingController::class, 'index'])->name('buildings.index');
         Route::get('/create', [BuildingController::class, 'create'])->name('buildings.create');
@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [BuildingController::class, 'destroy'])->name('buildings.destroy');
     });
 
-    // Căn Hộ (Apartments)
+    //Apartments
     Route::prefix('apartments')->group(function () {
         Route::get('/', [ApartmentController::class, 'index'])->name('apartments.index');
         Route::get('/floor-plan', [ApartmentController::class, 'floorPlan'])->name('apartments.floor-plan');
@@ -63,7 +63,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ApartmentController::class, 'destroy'])->name('apartments.destroy');
     });
 
-    // Khách Hàng (Customers)
+    //Customers
     Route::prefix('customers')->group(function () {
         // Real-time search endpoint (returns JSON)
         Route::get('/search', [CustomerController::class, 'search'])->name('customers.search');
@@ -76,7 +76,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('customers.destroy');
     });
 
-    // Hợp Đồng (Contracts)
+    //Contracts
     Route::prefix('contracts')->group(function () {
         Route::get('/', [ContractController::class, 'index'])->name('contracts.index');
         Route::get('/create', [ContractController::class, 'create'])->name('contracts.create');
@@ -87,7 +87,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [ContractController::class, 'destroy'])->name('contracts.destroy');
     });
 
-    // Hóa Đơn (Invoices)
+    //Invoices
     Route::prefix('invoices')->group(function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('invoices.index');
         Route::get('/create', [InvoiceController::class, 'create'])->name('invoices.create');
@@ -99,7 +99,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/mark-paid', [InvoiceController::class, 'markPaid'])->name('invoices.mark-paid');
     });
 
-    // Thu Chi (Transactions)
+    //Transactions
     Route::prefix('transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/create', [TransactionController::class, 'create'])->name('transactions.create');
@@ -110,13 +110,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{id}', [TransactionController::class, 'destroy'])->name('transactions.destroy');
     });
 
-    // Báo Cáo (Reports)
+    //Reports
     Route::prefix('reports')->group(function () {
         Route::get('/monthly', [ReportController::class, 'monthly'])->name('reports.monthly');
         Route::get('/yearly', [ReportController::class, 'yearly'])->name('reports.yearly');
     });
 
-    // Tài Khoản Người Dùng (Users)
+    //Users
     Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::get('/create', [UserController::class, 'create'])->name('users.create');
