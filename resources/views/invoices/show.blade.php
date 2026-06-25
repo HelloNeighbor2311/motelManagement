@@ -141,10 +141,10 @@
                     </div>
                 @endif
 
-                @if ($invoice->GhiChu)
+                @if ($invoice->MoTa)
                     <div style="padding-top: 12px; border-top: 1px solid #e0e0e0;">
                         <label style="font-weight: 600; color: #6C757D; font-size: 11px; text-transform: uppercase;">Ghi Chú</label>
-                        <p style="margin: 4px 0 0 0;">{{ $invoice->GhiChu }}</p>
+                        <p style="margin: 4px 0 0 0;">{{ $invoice->MoTa }}</p>
                     </div>
                 @endif
             </div>

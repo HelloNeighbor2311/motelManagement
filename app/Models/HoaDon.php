@@ -14,7 +14,7 @@ class HoaDon extends Model
     public $timestamps = false;
     protected $fillable = [
         'Id', 'HopDongId', 'KhachHangId', 'MaHoaDon', 'NgayPhatHanh', 'NgayDenHan', 'NgayThanhToan',
-        'SoTien', 'LoaiHoaDon', 'TrangThaiThanhToan', 'GhiChu', 'Thang', 'Nam'
+        'SoTien', 'LoaiHoaDon', 'TrangThaiThanhToan', 'MoTa', 'Thang', 'Nam'
     ];
 
     protected static function boot()

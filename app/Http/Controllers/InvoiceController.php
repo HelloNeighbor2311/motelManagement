@@ -63,6 +63,8 @@ class InvoiceController extends Controller
             $validated['TrangThaiThanhToan'] = $validated['TrangThaiThanhToan'] ?? 'ChuaThanhToan';
             $validated['Thang'] = $validated['Thang'] ?? date('n', strtotime($validated['NgayPhatHanh']));
             $validated['Nam'] = $validated['Nam'] ?? date('Y', strtotime($validated['NgayPhatHanh']));
+            $validated['MoTa'] = $validated['GhiChu'] ?? null;
+            unset($validated['GhiChu']);
             $invoice = HoaDon::create($validated);
             if ($request->wantsJson()) {
                 return response($invoice, 201);
@@ -123,6 +125,8 @@ class InvoiceController extends Controller
             $validated['TrangThaiThanhToan'] = $validated['TrangThaiThanhToan'] ?? $invoice->TrangThaiThanhToan;
             $validated['Thang'] = $validated['Thang'] ?? date('n', strtotime($validated['NgayPhatHanh']));
             $validated['Nam'] = $validated['Nam'] ?? date('Y', strtotime($validated['NgayPhatHanh']));
+            $validated['MoTa'] = $validated['GhiChu'] ?? null;
+            unset($validated['GhiChu']);
             $invoice->update($validated);
             if ($request->wantsJson()) {
                 return $invoice;
