@@ -14,6 +14,7 @@ class CanHoSeeder extends Seeder
     public function run(): void
     {
         $toas = DB::table('ToaNha')->get();
+        $ownerId = \Illuminate\Support\Facades\DB::table('users')->orderBy('id')->value('id');
 
         foreach ($toas as $toa) {
             // create 6 apartments per building
@@ -31,6 +32,7 @@ class CanHoSeeder extends Seeder
                     'SoPhong' => 1,
                     'TrangThai' => 'Trong',
                     'GiaThue' => 4000000 + $i * 500000,
+                    'user_id' => $ownerId,
                 ]);
             }
         }

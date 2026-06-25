@@ -9,7 +9,7 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ThuChi::query();
+        $query = ThuChi::forCurrentUser();
 
         if ($request->has('type') && $request->type != '') {
             $query->where('LoaiGiaoDich', $request->type);
@@ -35,15 +35,15 @@ class TransactionController extends Controller
 
         $transactions = $query->orderBy('NgayGiaoDich', 'desc')->paginate(20);
 
-        // Calculate summary statistics
+        // Calculate summary statistics (only for current user)
         $statistics = [
-            'totalIncome' => ThuChi::where('LoaiGiaoDich', 'Thu')->sum('SoTien'),
-            'totalExpense' => ThuChi::where('LoaiGiaoDich', 'Chi')->sum('SoTien'),
-            'monthIncome' => ThuChi::where('LoaiGiaoDich', 'Thu')
+            'totalIncome' => ThuChi::forCurrentUser()->where('LoaiGiaoDich', 'Thu')->sum('SoTien'),
+            'totalExpense' => ThuChi::forCurrentUser()->where('LoaiGiaoDich', 'Chi')->sum('SoTien'),
+            'monthIncome' => ThuChi::forCurrentUser()->where('LoaiGiaoDich', 'Thu')
                 ->whereMonth('NgayGiaoDich', now()->month)
                 ->whereYear('NgayGiaoDich', now()->year)
                 ->sum('SoTien'),
-            'monthExpense' => ThuChi::where('LoaiGiaoDich', 'Chi')
+            'monthExpense' => ThuChi::forCurrentUser()->where('LoaiGiaoDich', 'Chi')
                 ->whereMonth('NgayGiaoDich', now()->month)
                 ->whereYear('NgayGiaoDich', now()->year)
                 ->sum('SoTien'),
@@ -78,6 +78,7 @@ class TransactionController extends Controller
 
         try {
             $validated = $this->normalizeTransactionData($validated);
+            $validated['user_id'] = auth()->id();
             $transaction = ThuChi::create($validated);
             if ($request->wantsJson()) {
                 return response($transaction, 201);
@@ -95,7 +96,7 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $transaction = ThuChi::findOrFail($id);
+        $transaction = ThuChi::forCurrentUser()->findOrFail($id);
         if (request()->wantsJson()) {
             return $transaction;
         }
@@ -105,7 +106,7 @@ class TransactionController extends Controller
 
     public function edit($id)
     {
-        $transaction = ThuChi::findOrFail($id);
+        $transaction = ThuChi::forCurrentUser()->findOrFail($id);
         if (request()->wantsJson()) {
             return $transaction;
         }
@@ -115,7 +116,7 @@ class TransactionController extends Controller
 
     public function update(Request $request, $id)
     {
-        $transaction = ThuChi::findOrFail($id);
+        $transaction = ThuChi::forCurrentUser()->findOrFail($id);
 
         $validated = $request->validate([
             'HopDongId' => 'nullable|uuid|exists:HopDong,Id',
@@ -136,6 +137,7 @@ class TransactionController extends Controller
 
         try {
             $validated = $this->normalizeTransactionData($validated);
+            $validated['user_id'] = auth()->id();
             $transaction->update($validated);
             if ($request->wantsJson()) {
                 return $transaction;
@@ -154,7 +156,7 @@ class TransactionController extends Controller
     public function destroy($id)
     {
         try {
-            $transaction = ThuChi::findOrFail($id);
+            $transaction = ThuChi::forCurrentUser()->findOrFail($id);
             $transaction->delete();
             if (request()->wantsJson()) {
                 return response(null, 204);

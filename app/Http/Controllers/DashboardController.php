@@ -13,7 +13,7 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $statusCounts = CanHo::query()
+        $statusCounts = CanHo::forCurrentUser()
             ->selectRaw('TrangThai, COUNT(*) as total')
             ->groupBy('TrangThai')
             ->pluck('total', 'TrangThai');
@@ -22,8 +22,8 @@ class DashboardController extends Controller
         $occupiedApartments = (int) ($statusCounts['DangThue'] ?? 0);
 
         $stats = [
-            'areas' => KhuVuc::count(),
-            'buildings' => ToaNha::count(),
+            'areas' => KhuVuc::forCurrentUser()->count(),
+            'buildings' => ToaNha::forCurrentUser()->count(),
             'apartments' => $totalApartments,
             'empty' => (int) ($statusCounts['Trong'] ?? 0),
             'occupied' => $occupiedApartments,
@@ -31,11 +31,11 @@ class DashboardController extends Controller
             'occupancyRate' => $totalApartments > 0 ? round(($occupiedApartments / $totalApartments) * 100, 1) : 0,
         ];
 
-        $areas = KhuVuc::withCount(['toaNhas as toaNhas_count'])
+        $areas = KhuVuc::forCurrentUser()->withCount(['toaNhas as toaNhas_count'])
             ->orderBy('TenKhuVuc')
             ->get();
 
-        $recentApartments = CanHo::with('toaNha.khuVuc')
+        $recentApartments = CanHo::forCurrentUser()->with('toaNha.khuVuc')
             ->orderByDesc('CreatedAt')
             ->limit(8)
             ->get();

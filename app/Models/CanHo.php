@@ -4,17 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use App\Traits\OwnedByUser;
 
 class CanHo extends Model
 {
+    use OwnedByUser;
     protected $table = 'CanHo';
     protected $primaryKey = 'Id';
     protected $keyType = 'string';
     public $incrementing = false;
     public $timestamps = false;
 
-    protected $fillable = ['Id', 'ToaNhaId', 'MaCanHo', 'Tang', 'DienTich',
-        'SoPhong', 'TrangThai', 'GiaThue', 'CreatedAt',];
+    protected $fillable = [
+        'Id',
+        'user_id',
+        'ToaNhaId',
+        'MaCanHo',
+        'Tang',
+        'DienTich',
+        'SoPhong',
+        'TrangThai',
+        'GiaThue',
+        'CreatedAt',
+    ];
 
     protected static function boot()
     {

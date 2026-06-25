@@ -10,7 +10,7 @@ class AreaController extends Controller
     // List all areas
     public function index(Request $request)
     {
-        $areas = KhuVuc::withCount(['toaNhas as toaNhas_count'])
+        $areas = KhuVuc::forCurrentUser()->withCount(['toaNhas as toaNhas_count'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -68,7 +68,7 @@ class AreaController extends Controller
     // Show area details
     public function show($id)
     {
-        $area = KhuVuc::findOrFail($id);
+        $area = KhuVuc::forCurrentUser()->findOrFail($id);
         $buildings = $area->toaNhas()->with('canHos')->get();
 
         if (request()->wantsJson()) {
@@ -83,7 +83,7 @@ class AreaController extends Controller
     // Show edit form
     public function edit($id)
     {
-        $area = KhuVuc::findOrFail($id);
+        $area = KhuVuc::forCurrentUser()->findOrFail($id);
 
         return view('areas.edit', compact('area'));
     }
@@ -91,7 +91,7 @@ class AreaController extends Controller
     // Update area
     public function update(Request $request, $id)
     {
-        $area = KhuVuc::findOrFail($id);
+        $area = KhuVuc::forCurrentUser()->findOrFail($id);
 
         $validated = $request->validate([
             'TenKhuVuc' => 'required|string|max:200',
@@ -122,7 +122,7 @@ class AreaController extends Controller
     public function destroy($id)
     {
         try {
-            $area = KhuVuc::findOrFail($id);
+            $area = KhuVuc::forCurrentUser()->findOrFail($id);
 
             // Check if area has buildings
             if ($area->toaNhas()->count() > 0) {

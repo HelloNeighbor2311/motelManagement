@@ -9,12 +9,16 @@ class ThongTinKhachHangController extends Controller
 {
     public function index()
     {
-        return ThongTinKhachHang::all();
+        return ThongTinKhachHang::whereHas('khachHang', function ($query) {
+            $query->forCurrentUser();
+        })->get();
     }
 
     public function show($id)
     {
-        return ThongTinKhachHang::findOrFail($id);
+        return ThongTinKhachHang::whereHas('khachHang', function ($query) {
+            $query->forCurrentUser();
+        })->findOrFail($id);
     }
 
     public function store(Request $request)
@@ -35,7 +39,9 @@ class ThongTinKhachHangController extends Controller
 
     public function update(Request $request, $id)
     {
-        $m = ThongTinKhachHang::findOrFail($id);
+        $m = ThongTinKhachHang::whereHas('khachHang', function ($query) {
+            $query->forCurrentUser();
+        })->findOrFail($id);
 
         $validated = $request->validate([
             'KhachHangId' => 'sometimes|required|uuid',
@@ -53,7 +59,9 @@ class ThongTinKhachHangController extends Controller
 
     public function destroy($id)
     {
-        ThongTinKhachHang::findOrFail($id)->delete();
+        ThongTinKhachHang::whereHas('khachHang', function ($query) {
+            $query->forCurrentUser();
+        })->findOrFail($id)->delete();
         return response(null, 204);
     }
 }

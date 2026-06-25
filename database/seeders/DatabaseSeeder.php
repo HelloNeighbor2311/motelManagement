@@ -15,16 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        $this->call([
-            KhuVucSeeder::class,
-            ToaNhaSeeder::class,
-            CanHoSeeder::class,
-            KhachHangSeeder::class,
-            HopDongSeeder::class,
-        ]);
-
+        // Ensure at least one user exists for seeded records
         User::firstOrCreate(
             ['email' => 'test@example.com'],
             [
@@ -32,5 +23,15 @@ class DatabaseSeeder extends Seeder
                 'password' => bcrypt('password'),
             ]
         );
+
+        $this->call([
+            KhuVucSeeder::class,
+            ToaNhaSeeder::class,
+            CanHoSeeder::class,
+            KhachHangSeeder::class,
+            HopDongSeeder::class,
+            HoaDonSeeder::class,
+            ThuChiSeeder::class,
+        ]);
     }
 }

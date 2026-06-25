@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\KhachHang;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -13,6 +14,11 @@ class ThongTinKhachHang extends Model
     protected $keyType = 'string';
     public $timestamps = false;
     protected $fillable = ['KhachHangId', 'NgaySinh', 'GioiTinh', 'SoGiayTo', 'DiaChiThuongTru', 'QuocTich', 'GhiChu'];
+
+    public function khachHang()
+    {
+        return $this->belongsTo(KhachHang::class, 'KhachHangId', 'Id');
+    }
 
     protected static function boot()
     {

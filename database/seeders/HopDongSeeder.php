@@ -16,6 +16,7 @@ class HopDongSeeder extends Seeder
     {
         $khachs = DB::table('KhachHang')->take(10)->get();
         $canhos = DB::table('CanHo')->take(20)->get();
+        $ownerId = \Illuminate\Support\Facades\DB::table('users')->orderBy('id')->value('id');
 
         $i = 0;
         foreach ($khachs as $kh) {
@@ -47,6 +48,7 @@ class HopDongSeeder extends Seeder
                 'PhuongThucThanhToan' => 'ChuyenKhoan',
                 'ChuKyThanhToan' => 'Thang',
                 'TrangThaiHopDong' => 'HieuLuc',
+                'user_id' => $ownerId,
             ]);
 
             // mark apartment as rented
