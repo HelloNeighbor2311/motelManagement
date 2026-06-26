@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ThuChi;
+use GuzzleHttp\Psr7\Message;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -35,7 +36,7 @@ class TransactionController extends Controller
 
         $transactions = $query->orderBy('NgayGiaoDich', 'desc')->paginate(20);
 
-        // Calculate summary statistics (only for current user)
+        
         $statistics = [
             'totalIncome' => ThuChi::forCurrentUser()->where('LoaiGiaoDich', 'Thu')->sum('SoTien'),
             'totalExpense' => ThuChi::forCurrentUser()->where('LoaiGiaoDich', 'Chi')->sum('SoTien'),
