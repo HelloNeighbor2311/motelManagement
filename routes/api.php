@@ -16,7 +16,7 @@ Route::middleware('api')->group(function () {
     Route::apiResource('khu-vuc', AreaController::class);
     Route::apiResource('toa-nha', BuildingController::class);
     Route::apiResource('can-ho', ApartmentController::class);
-    // tai-khoan resource handled by UserController (merged)
+    //account resource handled by UserController
     Route::get('tai-khoan', [UserController::class, 'taiKhoanIndex']);
     Route::post('tai-khoan', [UserController::class, 'taiKhoanStore']);
     Route::get('tai-khoan/{id}', [UserController::class, 'taiKhoanShow']);

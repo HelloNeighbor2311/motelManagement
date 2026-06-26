@@ -66,9 +66,9 @@ class CanHo extends Model
     public function getStatusDisplayAttribute()
     {
         $displays = [
-            'Trong' => '✅ Trống',
-            'DangThue' => '⏳ Đang Thuê',
-            'BaoTri' => '🔧 Bảo Trì',
+            'Trong' => 'Trống',
+            'DangThue' => 'Đang Thuê',
+            'BaoTri' => 'Bảo Trì',
         ];
         return $displays[$this->TrangThai] ?? $this->TrangThai;
     }
